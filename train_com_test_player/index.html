@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Genetic XOR</title>
+
+  <!--<link rel="stylesheet" href="style.css"/>-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <style>
+    body{
+      padding:0;
+      background-color:lightgrey;
+    }
+
+    #cvs{
+      border-style: solid;
+      border-color: black;
+    }
+
+    .canvas-container{
+      position: relative;
+      display:block;
+      margin:auto;
+      height:400px;
+      width:500px;
+    }
+
+    #cvs, #canvas-overlay{
+      position: absolute;
+    }
+
+    #canvas-overlay{
+      background-color: white;
+      height:100%;
+      width:100%;
+    }
+
+    .result-bar{
+      display: inline-block;
+      padding: 5px;
+      margin:0;
+      border-radius:5px;
+    }
+
+    #post-game-results-won{
+      background-color: #00ba5d;
+    }
+
+    #post-game-results-lost{
+      margin-left: -4px;
+      background-color: #e24848;
+    }
+  </style>
+  <script></script>
+</head>
+
+<body>
+
+  <div class="container my-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
+      <a class="navbar-brand" href="#">LOGO</a>
+      <div class="collapse navbar-collapse ml-5" id="navbarsExample09">
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="old_version/old.html">Com vs. Com</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="container">
+    <div class="card">
+
+      <div class="w-100 m-auto">
+        <div class="canvas-container mt-4">
+
+          <canvas id="cvs" width="500" height="400" style="height:400px; width:500px; margin:auto;"></canvas>
+
+          <div id="canvas-overlay" class="h-100">
+            <div class="card h-100">
+              <div class="card-header">
+                <h2>Welcome</h2>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">This is a machine learning game</h5>
+                <p class="card-text">You play against the computer, and the computer (theoretically) gets better as you play</p>
+              </div>
+              <div class="card-footer">
+                <a id="progress-button" class="btn btn-primary float-right text-white">Rules of the game ▶</a>
+              </div>
+            </div>
+          </div>
+          <div id="continue-canvas-overlay" class="d-none h-100">
+            <div class="card h-100">
+              <div class="card-body">
+                <h4 id="post-game-message-title" class="card-title">Congratulations!</h4>
+                <p id="post-game-message" class="card-text">You won! Continue?</p>
+                <h5 id="post-game-results-title" class="card-text">Results:</h5>
+                <div id="post-game-results-holder">
+                  <div id="post-game-results-won" class="result-bar card-text">Won:</div>
+                  <div id="post-game-results-lost" class="result-bar card-text float-right">Lost:</div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <a id="play-again-button" class="btn btn-primary float-right text-white">Play</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button id="exit">EXIT PROCESS</button>
+      <button id="restart">RESTART PROCESS</button>
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://wagenaartje.github.io/neataptic/cdn/1.4.7/neataptic.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+  <script src="../genetic.js"></script>
+  <script src="../living.js"></script>
+  <script src="../canvas.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
