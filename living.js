@@ -52,10 +52,15 @@ var trainHumanPlayHuman = function(){
 
       genetic.userControlled = true;
 
-      genetic.play();
+      genetic.prepareDuel();
     }
 
   }else{
-    genetic.duel();
+    genetic.genomeIndex = 0;
+    genetic.iterateGeneration();
+    genetic.setInitialPositionValue();
+
+    genetic.prepareDuel();
+
   }
 };

@@ -29,8 +29,10 @@ function Genetic(){
   evolutionIterationProcess: null,
   movementProcess: null,
   evolutionIteration: 0,
+  genomeIndex: 0,
   numberOfEvolutionsEachRound: 250,
   animationTimer: 0,
+  timeLimit: 400,
   duelCounter: 0,
   gameResultWin: false,
   noOfLosses: 0,
@@ -75,7 +77,7 @@ function Genetic(){
     )
   },
   duel: function(){
-    this.duelCounter
+    this.duelCounter++
   },
   live: function () {
     // increment generation index
@@ -123,6 +125,42 @@ function Genetic(){
     this.moveAndDraw();
 
   },
+  prepareDuel: function(){
+    this.setGenome(this.genomeIndex);
+
+    this.genomeIndex++;
+
+    this.initializePositionBeforeTimeStep();
+
+    this.finishLoop = false;
+
+    this.animationTimer = 0;
+
+    this.userControlled = true;
+
+    this.duel();
+
+  },
+  duel: function(){
+    const isGenerationFinished = this.genomeIndex >= this.neat.population.length;
+    const isMatchFinished = this.animationTimer >= this.timeLimit || this.finishLoop;
+
+    if(!isGenerationFinished && !isMatchFinished){
+      this.animationTimer++
+
+      this.timeStep();
+      this.drawMovement();
+      this.determineFitness();
+
+      var thisGenetic = this;
+      this.movementProcess = setTimeout(function(){thisGenetic.duel() }, 50);
+    }else if(!isGenerationFinished){
+      this.prepareDuel();
+    }else{
+      this.evolve();
+      roundOver();
+    }
+  },
   moveAndDraw: function(){
     this.animationTimer++
 
@@ -130,7 +168,7 @@ function Genetic(){
       this.drawMovement();
       var thisGenetic = this;
       this.movementProcess = setTimeout(function(){thisGenetic.moveAndDraw() }, 1000);
-    }else if(!(this.finishLoop || this.animationTimer > 400)){
+    }else if(!(this.finishLoop || this.animationTimer > this.timeLimit)){
         this.timeStep();
         this.drawMovement();
 
@@ -139,7 +177,7 @@ function Genetic(){
     }else{
       this.finishLoop = false;
 
-      if(this.animationTimer >= 400 && this.userControlled){
+      if(this.animationTimer >= this.timeLimit && this.userControlled){
         this.gameResultWin = false;
         this.noOfLosses += 1;
       }
@@ -190,6 +228,11 @@ function Genetic(){
   setGenome: function(genomeIndex){
     this.genome = this.neat.population[genomeIndex]
     this.opponentGenome = this.opponentNeat.population[genomeIndex]
+
+    console.log("genomeIndex")
+        console.log(genomeIndex)
+    console.log(this.genome)
+    console.log(this.opponentGenome)
 
     this.genome.score = 0
     this.opponentGenome.score = 0
