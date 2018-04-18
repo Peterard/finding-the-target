@@ -6,7 +6,7 @@ var trainComPlayCom = function(){
   if(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1) < genetic.numberOfEvolutionsEachRound){
     genetic.evolutionIteration += 1;
     drawProgressText("Training completion: " + Math.round(100*(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1)) / (genetic.numberOfEvolutionsEachRound)) + "%");
-    genetic.evolutionIterationProcess = setTimeout(trainComPlayCom, 1);
+    setTimeout(trainComPlayCom, 1);
   }else{
     genetic.evolutionIteration += 1;
 
@@ -25,7 +25,7 @@ var trainComPlayHuman = function(){
     genetic.evolutionIteration += 1;
     drawProgressText("Training completion: " + Math.round(100*(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1)) / (genetic.numberOfEvolutionsEachRound)) + "%");
     let thisGenome = genetic;
-    genetic.evolutionIterationProcess = setTimeout(trainComPlayHuman, 1);
+    setTimeout(trainComPlayHuman, 1);
   }else{
     genetic.evolutionIteration += 1;
 
@@ -46,7 +46,7 @@ var trainHumanPlayHuman = function(){
       genetic.evolutionIteration += 1;
       drawProgressText("Training completion: " + Math.round(100*(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1)) / (genetic.numberOfEvolutionsEachRound)) + "%");
       let thisGenome = genetic;
-      genetic.evolutionIterationProcess = setTimeout(trainHumanPlayHuman, 1);
+      setTimeout(trainHumanPlayHuman, 1);
     }else{
       genetic.evolutionIteration += 1;
 

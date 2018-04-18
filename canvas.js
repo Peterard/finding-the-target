@@ -1,16 +1,16 @@
 var cvs = document.getElementById('cvs');
 
 window.addEventListener("resize", resize);
-var desiredScreenRatio = 0.5625;
-var minHeight = 356;
-var minWidth = 200;
+var desiredScreenRatio = 0.57;
+var minHeight = 178;
+var minWidth = 100;
 resize();
 
  // This is the ratio of Width:height for a 1080 x 1920 resolution screen
 
 function resize(){
-  let windowHeight = document.documentElement.clientHeight;
-  let windowWidth = document.documentElement.clientWidth;
+  let windowHeight = window.innerHeight;
+  let windowWidth = window.innerWidth;
 
   // if(windowHeight < minHeight){
   //   windowHeight = minHeight;
@@ -23,7 +23,11 @@ function resize(){
   const screenMargin = 40;
 
   if(windowWidth >= desiredScreenRatio * windowHeight){
-    console.log("BOABIES")
+    console.log("BOABIES");
+    console.log(document.getElementById('canvas-container').style.height);
+    console.log(windowHeight - screenMargin);
+    console.log(document.getElementById('canvas-container').style.width);
+    console.log(desiredScreenRatio * (windowHeight - screenMargin));
     cvs.height = windowHeight - screenMargin;
     cvs.width = desiredScreenRatio * (windowHeight - screenMargin);
     cvs.style.height = windowHeight - screenMargin + "px";
@@ -39,7 +43,7 @@ function resize(){
     document.getElementById('canvas-container').style.width = windowWidth - screenMargin + "px";
     console.log("dimmer time");
     console.log(document.getElementById('canvas-container').style.height);
-    console.log(((windowWidth - screenMargin) / desiredScreenRatio));
+    console.log(windowWidth);
     console.log(document.getElementById('canvas-container').style.width);
     console.log(windowWidth - screenMargin);
   }
@@ -94,7 +98,7 @@ function Canvas(canvas) {
     };
 
     this.textDraw = function(text, positionX, positionY, color) {
-        context.font = "20px Arial";
+        context.font = (width/15) + "px Arial";
         context.fillStyle = color;
         context.fillText(text,positionX,positionY)
 
@@ -102,10 +106,9 @@ function Canvas(canvas) {
     };
 
     this.textDrawBig = function(text, positionX, positionY, color) {
-        context.font = "30px Arial";
+        context.font = (width/7) + "px Arial";
         context.fillStyle = color;
         context.fillText(text,positionX,positionY)
-        console.log(color)
 
         return this;
     };
@@ -149,12 +152,14 @@ var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secon
     const secondY = height * secondCircleY;
     const thirdX = width * thirdCircleX;
     const thirdY = height * thirdCircleY;
+    const smallCircleRadius = width/30;
+    const largeCircleRadius = width/15;
 
     const canvas = new Canvas(cvs);
     canvas.clear();
-    canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,20,true,true);
-    canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,10,true,true);
-    canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,10,true,true);
+    canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius,true,true);
+    canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius,true,true);
+    canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
 }
 
 var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, fourthCircleX, fourthCircleY){
@@ -169,17 +174,19 @@ var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, second
     const thirdY = height * thirdCircleY;
     const fourthX = width * fourthCircleX;
     const fourthY = height * fourthCircleY;
+    const smallCircleRadius = width/30;
+    const largeCircleRadius = width/15;
 
     const canvas = new Canvas(cvs);
     canvas.clear();
-    canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,20,true,true);
-    canvas.setColor("fill", "white").setColor("stroke", "red").circle(fourthX, fourthY,10,false,true);
-    canvas.setColor("stroke", "red").line(fourthX, fourthY + 10, fourthX, fourthY + 4);
-    canvas.setColor("stroke", "red").line(fourthX, fourthY - 10, fourthX, fourthY - 4);
-    canvas.setColor("stroke", "red").line(fourthX + 10, fourthY, fourthX + 4, fourthY);
-    canvas.setColor("stroke", "red").line(fourthX - 10, fourthY, fourthX - 4, fourthY);
-    canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,10,true,true);
-    canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,10,true,true);
+    canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius,true,true);
+    canvas.setColor("fill", "white").setColor("stroke", "red").circle(fourthX, fourthY,smallCircleRadius,false,true);
+    canvas.setColor("stroke", "red").line(fourthX, fourthY + smallCircleRadius, fourthX, fourthY + smallCircleRadius/2);
+    canvas.setColor("stroke", "red").line(fourthX, fourthY - smallCircleRadius, fourthX, fourthY - smallCircleRadius/2);
+    canvas.setColor("stroke", "red").line(fourthX + smallCircleRadius, fourthY, fourthX + smallCircleRadius/2, fourthY);
+    canvas.setColor("stroke", "red").line(fourthX - smallCircleRadius, fourthY, fourthX - smallCircleRadius/2, fourthY);
+    canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius,true,true);
+    canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
 }
 
 var drawText = function(inputText){
@@ -207,8 +214,9 @@ var drawGenerationText = function(inputGen){
   var height = cvs.height;
 
   const canvas = new Canvas(cvs);
-  canvas.font = "15px Arial";
-  canvas.textDraw("Generation: " + inputGen,10,30, "black");
+  const leftMargin = width/30;
+  const topMargin = width/10;
+  canvas.textDraw("Generation: " + inputGen,leftMargin,topMargin, "black");
 }
 
 var drawIterationText = function(inputIteration){
@@ -218,8 +226,9 @@ var drawIterationText = function(inputIteration){
   inputIteration++
 
   const canvas = new Canvas(cvs);
-  canvas.font = "15px Arial";
-  canvas.textDraw("AI Rank (out of 20 AI): " + ordinalSuffixOf(inputIteration), 10, height - 30, "black");
+  const leftMargin = width/30;
+  const topMargin = width/10;
+  canvas.textDraw("AI Rank (out of 20 AI): " + ordinalSuffixOf(inputIteration), leftMargin, height - topMargin, "black");
 }
 
 var drawPregameOverlayText = function(overlayTimerValue, overlayTimerColorValue){
@@ -227,7 +236,6 @@ var drawPregameOverlayText = function(overlayTimerValue, overlayTimerColorValue)
   var height = cvs.height;
 
   const canvas = new Canvas(cvs);
-  canvas.font = "15px Arial";
   canvas.textDrawBig(overlayTimerValue, width/2, height/2, "rgb(" + overlayTimerColorValue + ", " + (255 - overlayTimerColorValue) + ", "+ overlayTimerColorValue + ")");
 }
 

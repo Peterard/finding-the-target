@@ -16,13 +16,13 @@ function Genetic(){
   startingInput: [],
   startingOpponentInput: [],
   userControlled: false,
-  timeSteps: 70,
-  maxInitialDistance: 65,
+  timeSteps: 90,
+  maxInitialDistance: 80,
   minDistance: 5,
   tagDistance: 6,
   cooldownTimer: 20,
   startDelay: 50,
-  maxSpeed: 1,
+  maxSpeed: 2,
   countdown: 5,
   playerCooldown: 0,
   opponentCooldown: 0,
@@ -152,7 +152,7 @@ function Genetic(){
       this.determineFitness();
 
       var thisGenetic = this;
-      this.movementProcess = setTimeout(function(){thisGenetic.duel() }, 50);
+      setTimeout(function(){thisGenetic.duel() }, 50);
     }else if(!isGenerationFinished && !isMatchFinished && isStart){
       this.animationTimer++
 
@@ -162,7 +162,7 @@ function Genetic(){
       this.determineFitness();
 
       var thisGenetic = this;
-      this.movementProcess = setTimeout(function(){thisGenetic.duel() }, 50);
+      setTimeout(function(){thisGenetic.duel() }, 50);
     }
     else if(!isGenerationFinished){
       this.prepareDuel();
@@ -178,13 +178,13 @@ function Genetic(){
       this.drawMovement();
       this.drawPregameOverlay();
       var thisGenetic = this;
-      this.movementProcess = setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
+      setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
     }else if(!(this.finishLoop || this.animationTimer > this.timeLimit)){
         this.timeStep();
         this.drawMovement();
 
         var thisGenetic = this;
-        this.movementProcess = setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
+        setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
     }else{
       this.finishLoop = false;
 
@@ -403,20 +403,6 @@ function Genetic(){
     opponentNeat.mutate()
 
     return averageScore;
-  },
-  listenToEndAllProcesses: function(){
-    document.getElementById("exit").addEventListener("click", function(){
-      clearCanvas();
-      this.endAllProcesses();
-    });
-
-    document.getElementById("restart").addEventListener("click", function(){
-      trainComPlayHuman();
-    });
-  },
-  endAllProcesses: function(){
-    clearTimeout(this.evolutionIterationProcess);
-    clearTimeout(this.movementProcess);
   },
   }
 }

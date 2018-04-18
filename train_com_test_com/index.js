@@ -39,7 +39,6 @@ document.getElementById("progress-button").addEventListener("click", function(e)
     $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
   }else{
     $("#canvas-overlay").hide();
-    genetic.listenToEndAllProcesses();
     trainComPlayCom();
   }
 });
