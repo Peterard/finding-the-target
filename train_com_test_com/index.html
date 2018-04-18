@@ -6,63 +6,36 @@
 
   <!--<link rel="stylesheet" href="style.css"/>-->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/main.css">
   <style>
-    body{
-      padding:0;
-      background-color:lightgrey;
-    }
-
-    #cvs{
-      border-style: solid;
-      border-color: black;
-    }
-
-    .canvas-container{
-      position: relative;
-      display:block;
-      margin:auto;
-      height:400px;
-      width:500px;
-    }
-
-    #cvs, #canvas-overlay{
-      position: absolute;
-    }
-
-    #canvas-overlay{
-      background-color: white;
-      height:100%;
-      width:100%;
-    }
-
-    .result-bar{
-      display: inline-block;
-      padding: 5px;
-      margin:0;
-      border-radius:5px;
-    }
-
-    #post-game-results-won{
-      background-color: #00ba5d;
-    }
-
-    #post-game-results-lost{
-      margin-left: -4px;
-      background-color: #e24848;
-    }
   </style>
   <script></script>
 </head>
 
 <body>
 
-  <div class="container my-4">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light rounded">
-      <a class="navbar-brand" href="#">LOGO</a>
-      <div class="collapse navbar-collapse ml-5" id="navbarsExample09">
+  <div class="container my-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">moriartyBot</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item active">
-            <a class="nav-link" href="old_version/old.html">Com vs. Com</a>
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Bot vs. Bot</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Bot vs. Player</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Bot vs. Player Plus</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" href="#">About</a>
           </li>
         </ul>
       </div>
@@ -72,7 +45,7 @@
     <div class="card">
 
       <div class="w-100 m-auto">
-        <div class="canvas-container mt-4">
+        <div id="canvas-container" class="canvas-container my-4">
 
           <canvas id="cvs" width="500" height="400" style="height:400px; width:500px; margin:auto;"></canvas>
 
@@ -95,7 +68,7 @@
               <div class="card-body">
                 <h4 id="post-game-message-title" class="card-title">Congratulations!</h4>
                 <p id="post-game-message" class="card-text">You won! Continue?</p>
-                <h5 id="post-game-results-title" class="card-text">Results:</h5>
+                <h5 id="post-game-results-title" class="card-text mt-4">Results:</h5>
                 <div id="post-game-results-holder">
                   <div id="post-game-results-won" class="result-bar card-text">Won:</div>
                   <div id="post-game-results-lost" class="result-bar card-text float-right">Lost:</div>
@@ -108,9 +81,6 @@
           </div>
         </div>
       </div>
-      <button id="exit">EXIT PROCESS</button>
-      <button id="restart">RESTART PROCESS</button>
-      <div id="results"></div>
     </div>
   </div>
 

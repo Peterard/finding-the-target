@@ -1,5 +1,51 @@
 var cvs = document.getElementById('cvs');
 
+window.addEventListener("resize", resize);
+var desiredScreenRatio = 0.5625;
+var minHeight = 356;
+var minWidth = 200;
+resize();
+
+ // This is the ratio of Width:height for a 1080 x 1920 resolution screen
+
+function resize(){
+  let windowHeight = document.documentElement.clientHeight;
+  let windowWidth = document.documentElement.clientWidth;
+
+  // if(windowHeight < minHeight){
+  //   windowHeight = minHeight;
+  // }
+  //
+  // if(windowWidth < minWidth){
+  //   windowWidth = minWidth;
+  // }
+
+  const screenMargin = 40;
+
+  if(windowWidth >= desiredScreenRatio * windowHeight){
+    console.log("BOABIES")
+    cvs.height = windowHeight - screenMargin;
+    cvs.width = desiredScreenRatio * (windowHeight - screenMargin);
+    cvs.style.height = windowHeight - screenMargin + "px";
+    cvs.style.width = desiredScreenRatio * (windowHeight - screenMargin) + "px";
+    document.getElementById('canvas-container').style.height = windowHeight - screenMargin + "px";
+    document.getElementById('canvas-container').style.width = desiredScreenRatio * (windowHeight - screenMargin) + "px";
+  }else{
+    cvs.height = (windowWidth - screenMargin) / desiredScreenRatio;
+    cvs.width = windowWidth - screenMargin;
+    cvs.style.height = ((windowWidth - screenMargin) / desiredScreenRatio) + "px";
+    cvs.style.width = windowWidth - screenMargin + "px";
+    document.getElementById('canvas-container').style.height = ((windowWidth - screenMargin) / desiredScreenRatio) + "px";
+    document.getElementById('canvas-container').style.width = windowWidth - screenMargin + "px";
+    console.log("dimmer time");
+    console.log(document.getElementById('canvas-container').style.height);
+    console.log(((windowWidth - screenMargin) / desiredScreenRatio));
+    console.log(document.getElementById('canvas-container').style.width);
+    console.log(windowWidth - screenMargin);
+  }
+}
+
+
 function Canvas(canvas) {
     var context = canvas.getContext('2d');
     var width = canvas.width;
@@ -12,6 +58,16 @@ function Canvas(canvas) {
 
         if (fill)   { context.fill(); }
         if (stroke) { context.stroke(); }
+
+        return this;
+    };
+
+    // Draw a circle
+    this.line = function(x, y, i, j) {
+        context.beginPath();
+        context.moveTo(x,y);
+        context.lineTo(i,j);
+        context.stroke();
 
         return this;
     };
@@ -38,9 +94,18 @@ function Canvas(canvas) {
     };
 
     this.textDraw = function(text, positionX, positionY, color) {
+        context.font = "20px Arial";
+        context.fillStyle = color;
+        context.fillText(text,positionX,positionY)
+
+        return this;
+    };
+
+    this.textDrawBig = function(text, positionX, positionY, color) {
         context.font = "30px Arial";
         context.fillStyle = color;
         context.fillText(text,positionX,positionY)
+        console.log(color)
 
         return this;
     };
@@ -55,7 +120,7 @@ function Canvas(canvas) {
 }
 
 var drawOnCanvas = function(input){
-    new Canvas(cvs).clear().setColor("fill", "brown").setColor("stroke", "brown").circle(111,111,input,true,true).setColor("fill", "yellow").setColor("stroke", "yellow").circle(222,111,input,true,true);
+    new Canvas(cvs).clear().setColor("fill", "brown").setColor("stroke", "brown").circle(0,0,input,true,true).setColor("fill", "yellow").setColor("stroke", "yellow").circle(11,11,input,true,true);
 }
 
 var clearCanvas = function(){
@@ -109,8 +174,61 @@ var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, second
     canvas.clear();
     canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,20,true,true);
     canvas.setColor("fill", "white").setColor("stroke", "red").circle(fourthX, fourthY,10,false,true);
+    canvas.setColor("stroke", "red").line(fourthX, fourthY + 10, fourthX, fourthY + 4);
+    canvas.setColor("stroke", "red").line(fourthX, fourthY - 10, fourthX, fourthY - 4);
+    canvas.setColor("stroke", "red").line(fourthX + 10, fourthY, fourthX + 4, fourthY);
+    canvas.setColor("stroke", "red").line(fourthX - 10, fourthY, fourthX - 4, fourthY);
     canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,10,true,true);
     canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,10,true,true);
+}
+
+var drawText = function(inputText){
+  var width = cvs.width;
+  var height = cvs.height;
+
+  const canvas = new Canvas(cvs);
+  canvas.clear();
+  canvas.font = "15px Arial";
+  canvas.textDrawBig(inputText,width/2,height/2, "black");
+}
+
+var drawProgressText = function(inputText){
+  var width = cvs.width;
+  var height = cvs.height;
+
+  const canvas = new Canvas(cvs);
+  canvas.clear();
+  canvas.font = "15px Arial";
+  canvas.textDraw(inputText,width/8,height/2, "black");
+}
+
+var drawGenerationText = function(inputGen){
+  var width = cvs.width;
+  var height = cvs.height;
+
+  const canvas = new Canvas(cvs);
+  canvas.font = "15px Arial";
+  canvas.textDraw("Generation: " + inputGen,10,30, "black");
+}
+
+var drawIterationText = function(inputIteration){
+  var width = cvs.width;
+  var height = cvs.height;
+
+  inputIteration++
+
+  const canvas = new Canvas(cvs);
+  canvas.font = "15px Arial";
+  canvas.textDraw("AI Rank (out of 20 AI): " + ordinalSuffixOf(inputIteration), 10, height - 30, "black");
+}
+
+var drawPregameOverlayText = function(overlayTimerValue, overlayTimerColorValue){
+  var width = cvs.width;
+  var height = cvs.height;
+
+  const canvas = new Canvas(cvs);
+  canvas.font = "15px Arial";
+  canvas.textDrawBig(overlayTimerValue, width/2, height/2, "rgb(" + overlayTimerColorValue + ", " + (255 - overlayTimerColorValue) + ", "+ overlayTimerColorValue + ")");
 }
 
 var canvasCoordinatesToCanvasRatio = function(coords){
@@ -120,22 +238,17 @@ var canvasCoordinatesToCanvasRatio = function(coords){
   return [coords[0]/width, coords[1]/height]
 }
 
-var drawText = function(inputText){
-  var width = cvs.width;
-  var height = cvs.height;
-
-  const canvas = new Canvas(cvs);
-  canvas.clear();
-  canvas.font = "30px Arial";
-  canvas.textDraw(inputText,width/2,height/2, "black");
-}
-
-var drawProgressText = function(inputText){
-  var width = cvs.width;
-  var height = cvs.height;
-
-  const canvas = new Canvas(cvs);
-  canvas.clear();
-  canvas.font = "30px Arial";
-  canvas.textDraw(inputText,width/6,height/2, "black");
+function ordinalSuffixOf(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
 }

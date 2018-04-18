@@ -21,6 +21,7 @@ function Genetic(){
   minDistance: 5,
   tagDistance: 6,
   cooldownTimer: 20,
+  startDelay: 50,
   maxSpeed: 1,
   countdown: 5,
   playerCooldown: 0,
@@ -30,7 +31,7 @@ function Genetic(){
   movementProcess: null,
   evolutionIteration: 0,
   genomeIndex: 0,
-  numberOfEvolutionsEachRound: 250,
+  numberOfEvolutionsEachRound: 25,
   animationTimer: 0,
   timeLimit: 400,
   duelCounter: 0,
@@ -75,9 +76,6 @@ function Genetic(){
           ),
       },
     )
-  },
-  duel: function(){
-    this.duelCounter++
   },
   live: function () {
     // increment generation index
@@ -144,8 +142,9 @@ function Genetic(){
   duel: function(){
     const isGenerationFinished = this.genomeIndex >= this.neat.population.length;
     const isMatchFinished = this.animationTimer >= this.timeLimit || this.finishLoop;
+    const isStart = this.animationTimer <= this.startDelay;
 
-    if(!isGenerationFinished && !isMatchFinished){
+    if(!isGenerationFinished && !isMatchFinished && !isStart){
       this.animationTimer++
 
       this.timeStep();
@@ -154,7 +153,18 @@ function Genetic(){
 
       var thisGenetic = this;
       this.movementProcess = setTimeout(function(){thisGenetic.duel() }, 50);
-    }else if(!isGenerationFinished){
+    }else if(!isGenerationFinished && !isMatchFinished && isStart){
+      this.animationTimer++
+
+      this.timeStep();
+      this.drawMovement();
+      this.drawPregameOverlay();
+      this.determineFitness();
+
+      var thisGenetic = this;
+      this.movementProcess = setTimeout(function(){thisGenetic.duel() }, 50);
+    }
+    else if(!isGenerationFinished){
       this.prepareDuel();
     }else{
       this.evolve();
@@ -164,10 +174,11 @@ function Genetic(){
   moveAndDraw: function(){
     this.animationTimer++
 
-    if(this.animationTimer === 1){
+    if(this.animationTimer < this.startDelay){
       this.drawMovement();
+      this.drawPregameOverlay();
       var thisGenetic = this;
-      this.movementProcess = setTimeout(function(){thisGenetic.moveAndDraw() }, 1000);
+      this.movementProcess = setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
     }else if(!(this.finishLoop || this.animationTimer > this.timeLimit)){
         this.timeStep();
         this.drawMovement();
@@ -193,7 +204,7 @@ function Genetic(){
     this.opponentNeat.sort();
   },
   setInitialPositionValue: function(){
-    const playerStartingBearing = Math.random() * 2 * Math.PI;
+    const playerStartingBearing = Math.PI/2 - (2 * Math.random() * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1); //- Math.PI/30 + Math.random() * 2 * Math.PI / 15;
     const opponentStartingBearing = playerStartingBearing + (2 * Math.round(Math.random() + 1) - 3) * (Math.PI / 18);
 
     const playerInitialXCoordinate = this.maxInitialDistance * Math.cos(playerStartingBearing);
@@ -229,19 +240,20 @@ function Genetic(){
     this.genome = this.neat.population[genomeIndex]
     this.opponentGenome = this.opponentNeat.population[genomeIndex]
 
-    console.log("genomeIndex")
-        console.log(genomeIndex)
-    console.log(this.genome)
-    console.log(this.opponentGenome)
-
     this.genome.score = 0
     this.opponentGenome.score = 0
   },
   makeRatioASimulationPosition: function(ratio){
-    return (ratio - 0.5) * (2*this.maxInitialDistance) ;
+    simPosition = [];
+    simPosition[0] = (ratio[0] - 0.5) * (2 * this.maxInitialDistance * desiredScreenRatio);
+    simPosition[1] = (ratio[1] - 0.3) * (2 * this.maxInitialDistance);
+    return simPosition;
   },
   makeSimulationPositionARatio: function(simPosition){
-    return simPosition / (2*this.maxInitialDistance);
+    ratio = [];
+    ratio[0] = simPosition[0] / (2 * this.maxInitialDistance * desiredScreenRatio);
+    ratio[1] = simPosition[1] / (2 * this.maxInitialDistance);
+    return ratio;
   },
   timeStep: function(){
     //TRIG IN HERE a2 = b2 + c2 - 2bc cos A
@@ -254,8 +266,8 @@ function Genetic(){
       let ratioCoords;
       if(userNavigation.length > 0){
         ratioCoords = canvasCoordinatesToCanvasRatio(userNavigation);
-        output[0] = this.makeRatioASimulationPosition(ratioCoords[0]) - this.currentPosition[0];
-        output[1] = this.makeRatioASimulationPosition(ratioCoords[1]) - this.currentPosition[1];
+        output[0] = this.makeRatioASimulationPosition(ratioCoords)[0] - this.currentPosition[0];
+        output[1] = this.makeRatioASimulationPosition(ratioCoords)[1] - this.currentPosition[1];
       }else{
         output = [0,0]
       }
@@ -301,8 +313,13 @@ function Genetic(){
 
     this.finishLoop = false;
 
+    const bothPlayerAndOpponentOffTheScreen = ((playerDistanceToOrigin[0] > this.maxInitialDistance * desiredScreenRatio
+      || playerDistanceToOrigin[1] > this.maxInitialDistance)
+       && (opponentDistanceToOrigin[0] > this.maxInitialDistance * desiredScreenRatio
+         ||opponentDistanceToOrigin[1] > this.maxInitialDistance));
+
     if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minDistance
-      || (playerDistanceToOrigin > this.maxInitialDistance && opponentDistanceToOrigin > this.maxInitialDistance)){
+      || bothPlayerAndOpponentOffTheScreen){
       this.finishLoop = true;
 
     if(this.userControlled){
@@ -319,22 +336,31 @@ function Genetic(){
   drawMovement: function(){
     const positionThisFrame = this.currentPosition;
     const opponentPositionThisFrame = this.currentOpponentPosition;
-    const xPosition = this.makeSimulationPositionARatio(positionThisFrame[0]);
-    const yPosition = this.makeSimulationPositionARatio(positionThisFrame[1]);
-    const xOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame[0]);
-    const yOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame[1]);
+    const xPosition = this.makeSimulationPositionARatio(positionThisFrame)[0];
+    const yPosition = this.makeSimulationPositionARatio(positionThisFrame)[1];
+    const xOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[0];
+    const yOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[1];
     if(userNavigation.length === 2){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
-      drawFourCircles(0.5, 0.5, xPosition + 0.5, yPosition + 0.5, xOpponentPosition + 0.5, yOpponentPosition + 0.5, userTarget[0], userTarget[1]);
+
+      drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1]);
+      drawGenerationText(this.opponentNeat.generation);
+      drawIterationText(this.genomeIndex);
     }else{
-      drawThreeCircles(0.5, 0.5, xPosition + 0.5, yPosition + 0.5, xOpponentPosition + 0.5, yOpponentPosition + 0.5);
+      drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3);
+      drawGenerationText(this.opponentNeat.generation);
+      drawIterationText(this.genomeIndex);
     }
+  },
+  drawPregameOverlay: function(){
+    const pregameTimer = 4 - Math.ceil((this.animationTimer / this.startDelay) * 3);
+    const pregameTimerRaw = 4 - (this.animationTimer / this.startDelay) * 3;
+    drawPregameOverlayText(pregameTimer, 255 - Math.round(255 * (pregameTimerRaw - pregameTimer)));
   },
   evolve: function () {
     const neat = this.neat
     const averageScore = neat.getAverage();
-    $("#results").prepend(`[generation ${neat.generation}] Average score: ${neat.getAverage()} (the closer to zero the better) <br>`);
-    // sort by genome.score in descending order
+        // sort by genome.score in descending order
     neat.sort()
 
     // our new population will be here
@@ -361,7 +387,6 @@ function Genetic(){
 
     //opponent grows too
     const opponentNeat = this.opponentNeat
-    $("#results").prepend(`[generation ${opponentNeat.generation}] Average score: ${opponentNeat.getAverage()} (the closer to zero the better) <br>`);
     opponentNeat.sort()
     newPopulation = []
     numberOfElitesAdded = 0;

@@ -1,0 +1,52 @@
+body{
+  padding:0;
+  background-color:lightgrey;
+}
+
+#cvs{
+  border-style: solid;
+  border-color: black;
+  border-radius:5px;
+}
+
+#cvs, #canvas-container{
+  min-width: 300px;
+  min-height: 533px;
+}
+
+.canvas-container{
+  position: relative;
+  display:block;
+  margin:auto;
+  height:400px;
+  width:500px;
+}
+
+#cvs, #canvas-overlay{
+  position: absolute;
+}
+
+#canvas-overlay{
+  background-color: white;
+  height:100%;
+  width:100%;
+}
+
+.result-bar{
+  display: inline-block;
+  padding: 5px;
+  margin:0;
+  border-radius:5px;
+  min-height: 90px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#post-game-results-won{
+  background-color: #00ba5d;
+}
+
+#post-game-results-lost{
+  margin-left: -4px;
+  background-color: #e24848;
+}

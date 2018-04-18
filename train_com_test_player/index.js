@@ -59,8 +59,8 @@ var gameFinish = function(){
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";
   document.getElementById("post-game-message").innerHTML = gameResult ? "You won! Continue?" : "You lost! Play again?";
-  document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
+  document.getElementById("post-game-results-won").innerHTML =  "Won: <br>" + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% <br> (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
+  document.getElementById("post-game-results-lost").innerHTML = "Lost: <br>" + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% <br> (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
   document.getElementById("post-game-results-won").style.width = (30 + (40 * (noOfWins / (noOfWins + noOfLosses)))) + "%";
   document.getElementById("post-game-results-lost").style.width = (30 + (40 * (noOfLosses / (noOfWins + noOfLosses)))) + "%";
 }
