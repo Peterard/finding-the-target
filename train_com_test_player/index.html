@@ -7,11 +7,12 @@
   <!--<link rel="stylesheet" href="style.css"/>-->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="../css/main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
 
   </style>
   <script></script>
-  
+
 </head>
 
 <body>
@@ -61,7 +62,7 @@
                 <p class="card-text">You play against the computer, and the computer (theoretically) gets better as you play</p>
               </div>
               <div class="card-footer">
-                <a id="progress-button" class="btn btn-primary float-right text-white">Rules of the game ▶</a>
+                <a id="progress-button" class="btn btn-primary float-right text-white">Rules ▶</a>
               </div>
             </div>
           </div>
@@ -72,8 +73,12 @@
                 <p id="post-game-message" class="card-text">You won! Continue?</p>
                 <h5 id="post-game-results-title" class="card-text mt-4">Results:</h5>
                 <div id="post-game-results-holder">
-                  <div id="post-game-results-won" class="result-bar card-text">Won:</div>
-                  <div id="post-game-results-lost" class="result-bar card-text float-right">Lost:</div>
+                  <div id="post-game-results-won" class="result-text card-text">Won:</div>
+                  <div id="post-game-results-lost" class="result-text card-text text-right float-right">Lost:</div>
+                  <div>
+                    <div id="post-game-results-won-bar" class="result-bar float-left"></div>
+                    <div id="post-game-results-lost-bar" class="result-bar float-right"></div>
+                  </div>
                 </div>
               </div>
               <div class="card-footer">

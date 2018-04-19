@@ -11,18 +11,18 @@ let playProcess;
 let movementProcess;
 
 let pageNumber = 0;
-const headerText = ["Welcome", "Rules", "How to play", "Strategy", "Other versions"];
-const titleText = ["This is a machine learning game", "There are three main rules to this game", "Movement", "How will you play?", "Com vs Com"];
-const contentText = ["You play against the computer, and the computer (theoretically) gets better as you play",
+const headerText = ["Welcome", "Rules", "Strategy", "Other versions"];
+const titleText = ["This is a machine learning game", "There are three main rules to this game", "How will they play?", "Bot vs Player"];
+const contentText = ["One bot plays against another, and they should (theoretically) both get better as they play",
 "<ol>\
-  <li>You are a yellow circle. Your aim is to get home to the brown circle in the middle.</li>\
-  <li>You need to get home before your opponent, a pink circle. If the pink circle gets home first, you lose.</li>\
-  <li>If you touch or 'tag' your opponent, then the one of you who is closest to home when you touch is unable to move for a few seconds.</li>\
+  <li>The bots are yellow and pink circles. Their aim is to get home to the brown circle in the middle.</li>\
+  <li>They need to get home before their opponent, else they lose.</li>\
+  <li>If they touch or 'tag' their opponent, then the bot which is closest to home when they touch is unable to move for a few seconds.</li>\
 </ol>",
-"You move via clicking in the direction that you want to move in. A red reticule should appear wherever you click on the screen. Your yellow circle will move (quite slowly) in that direction",
-"Will you make a beeline for the target? Will you be agressive and first seek to subdue your opponent by tagging them before going towards the objective? And what will the computer do?",
-"If you would like to relax and watch two computers duel it out instead, then please feel free to try the <a href='old_version/old.html'>Com VS Com Version</a>"];
-const buttonText = ["Rules of the game ▶", "How to play ▶", "Strategy ▶", "Other versions ▶", "Train"];
+"Will they make a beeline for the target? Will they be agressive and first seek to subdue your opponent by tagging them before going towards the objective? How will their strategy develop?",
+"If you want to go head to head against the bots, go ahead and try at <a href='../train_com_test_player/index.html'>Bot vs Player Version</a> <br><br>\
+ Alternatively, if you want to teach the bots how you play by playing against them, go ahead at <a href='../train_player_test_player/index.html'>Bot vs Player (Learning) Version</a>. Be warned, the bots are not fast learners."];
+const buttonText = ["Rules ▶", "Strategy ▶", "Versions ▶", "Train"];
 
 const nextPage = function(){
 
@@ -31,7 +31,7 @@ const nextPage = function(){
 // run this in 500ms (1 second)
 document.getElementById("progress-button").addEventListener("click", function(e){
   e.preventDefault();
-  if(pageNumber < 4){
+  if(pageNumber < 3){
     pageNumber += 1
     $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
     $("#canvas-overlay .card-title").html(titleText[pageNumber]);

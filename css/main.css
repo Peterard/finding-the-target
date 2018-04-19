@@ -10,13 +10,29 @@ body{
 }
 
 #cvs, #canvas-container{
-  min-width: 300px;
-  min-height: 533px;
+  width: 100%;
+}
+
+.card-body{
+  max-height:95%;
+  overflow: auto;
+}
+
+.card-text{
+  overflow: auto;
+}
+
+.btn{
+  min-width: 100px;
+}
+
+#canvas-container{
+  overflow:hidden;
 }
 
 .btn,
 .card-text{
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .card-title{
@@ -46,21 +62,27 @@ body{
   width:100%;
 }
 
-.result-bar{
+.result-text{
   display: inline-block;
   padding: 5px;
   margin:0;
   border-radius:5px;
-  min-height: 90px;
-  text-align: center;
-  vertical-align: middle;
+  width:50%;
 }
 
-#post-game-results-won{
+.result-bar{
+  display: inline-block;
+  padding: 5px;
+  margin:0;
+  height:20px;
+  border-radius:5px;
+}
+
+#post-game-results-won-bar{
   background-color: #00ba5d;
 }
 
-#post-game-results-lost{
-  margin-left: -4px;
+#post-game-results-lost-bar{
+  margin-left: -10px;
   background-color: #e24848;
 }

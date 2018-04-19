@@ -11,6 +11,8 @@ resize();
 function resize(){
   let windowHeight = window.innerHeight;
   let windowWidth = window.innerWidth;
+  let canvasContainerHeight = $('#canvas-container').height();
+  let canvasContainerWidth = $('#canvas-container').width();
 
   // if(windowHeight < minHeight){
   //   windowHeight = minHeight;
@@ -20,7 +22,7 @@ function resize(){
   //   windowWidth = minWidth;
   // }
 
-  const screenMargin = 40;
+  const screenMargin = 50;
 
   if(windowWidth >= desiredScreenRatio * windowHeight){
     console.log("BOABIES");
@@ -35,15 +37,14 @@ function resize(){
     document.getElementById('canvas-container').style.height = windowHeight - screenMargin + "px";
     document.getElementById('canvas-container').style.width = desiredScreenRatio * (windowHeight - screenMargin) + "px";
   }else{
-    cvs.height = (windowWidth - screenMargin) / desiredScreenRatio;
-    cvs.width = windowWidth - screenMargin;
-    cvs.style.height = ((windowWidth - screenMargin) / desiredScreenRatio) + "px";
-    cvs.style.width = windowWidth - screenMargin + "px";
-    document.getElementById('canvas-container').style.height = ((windowWidth - screenMargin) / desiredScreenRatio) + "px";
-    document.getElementById('canvas-container').style.width = windowWidth - screenMargin + "px";
+    cvs.height = (canvasContainerWidth) / desiredScreenRatio;
+    cvs.width = canvasContainerWidth;
+    cvs.style.height = ((canvasContainerWidth) / desiredScreenRatio) + "px";
+    cvs.style.width = canvasContainerWidth + "px";
+    document.getElementById('canvas-container').style.height = ((canvasContainerWidth) / desiredScreenRatio) + "px";
     console.log("dimmer time");
     console.log(document.getElementById('canvas-container').style.height);
-    console.log(windowWidth);
+    console.log(canvasContainerWidth);
     console.log(document.getElementById('canvas-container').style.width);
     console.log(windowWidth - screenMargin);
   }

@@ -31,7 +31,8 @@ function Genetic(){
   movementProcess: null,
   evolutionIteration: 0,
   genomeIndex: 0,
-  numberOfEvolutionsEachRound: 25,
+  numberOfEvolutionsEachRound: 250,
+  numberOfEvolutionsBeforePlayerOnlyLearning: 250,
   animationTimer: 0,
   timeLimit: 400,
   duelCounter: 0,
@@ -49,7 +50,7 @@ function Genetic(){
       null, // fitnessFunction - in this example we are calculating fitness inside live method
       {
         elitism: 15, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
-        popsize: 20,
+        popsize: 15,
         mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
@@ -66,7 +67,7 @@ function Genetic(){
       null, // fitnessFunction - in this example we are calculating fitness inside live method
       {
         elitism: 15, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
-        popsize: 20,
+        popsize: 15,
         mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
@@ -124,9 +125,10 @@ function Genetic(){
 
   },
   prepareDuel: function(){
+
     this.setGenome(this.genomeIndex);
 
-    this.genomeIndex++;
+    this.genomeIndex--;
 
     this.initializePositionBeforeTimeStep();
 
@@ -140,7 +142,7 @@ function Genetic(){
 
   },
   duel: function(){
-    const isGenerationFinished = this.genomeIndex >= this.neat.population.length;
+    const isGenerationFinished = this.genomeIndex < 0;
     const isMatchFinished = this.animationTimer >= this.timeLimit || this.finishLoop;
     const isStart = this.animationTimer <= this.startDelay;
 
@@ -156,10 +158,8 @@ function Genetic(){
     }else if(!isGenerationFinished && !isMatchFinished && isStart){
       this.animationTimer++
 
-      this.timeStep();
       this.drawMovement();
       this.drawPregameOverlay();
-      this.determineFitness();
 
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 50);
@@ -340,7 +340,7 @@ function Genetic(){
     const yPosition = this.makeSimulationPositionARatio(positionThisFrame)[1];
     const xOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[0];
     const yOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[1];
-    if(userNavigation.length === 2){
+    if(userNavigation.length === 2 && this.userControlled){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
 
       drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1]);

@@ -21,8 +21,9 @@ const contentText = ["You play against the computer, and the computer (theoretic
 </ol>",
 "You move via clicking in the direction that you want to move in. A red reticule should appear wherever you click on the screen. Your yellow circle will move (quite slowly) in that direction",
 "Will you make a beeline for the target? Will you be agressive and first seek to subdue your opponent by tagging them before going towards the objective? And what will the computer do?",
-"If you would like to relax and watch two computers duel it out instead, then please feel free to try the <a href='old_version/old.html'>Com VS Com Version</a>"];
-const buttonText = ["Rules of the game ▶", "How to play ▶", "Strategy ▶", "Other versions ▶", "Train"];
+"If you would like to relax and watch two computers duel it out instead, then please feel free to try the <a href='../train_com_test_com/index.html'>Com vs Com Version</a><br><br>\
+ Alternatively, if you want to teach the bots how you play by playing against them, go ahead at <a href='../train_player_test_player/index.html'>Bot vs Player (Learning) Version</a>. Be warned, the bots are not fast learners."];
+const buttonText = ["Rules ▶", "How to play ▶", "Strategy ▶", "Versions ▶", "Train"];
 
 const nextPage = function(){
 
@@ -58,10 +59,10 @@ var gameFinish = function(){
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";
   document.getElementById("post-game-message").innerHTML = gameResult ? "You won! Continue?" : "You lost! Play again?";
-  document.getElementById("post-game-results-won").innerHTML =  "Won: <br>" + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% <br> (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-lost").innerHTML = "Lost: <br>" + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% <br> (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-won").style.width = (30 + (40 * (noOfWins / (noOfWins + noOfLosses)))) + "%";
-  document.getElementById("post-game-results-lost").style.width = (30 + (40 * (noOfLosses / (noOfWins + noOfLosses)))) + "%";
+  document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
+  document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
+  document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / (noOfWins + noOfLosses))) + "%";
+  document.getElementById("post-game-results-lost-bar").style.width = Math.round(100 * (noOfLosses / (noOfWins + noOfLosses))) + "%";
 }
 
 //genetic.play();

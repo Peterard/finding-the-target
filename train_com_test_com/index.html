@@ -56,10 +56,10 @@
               </div>
               <div class="card-body">
                 <h5 class="card-title">This is a machine learning game</h5>
-                <p class="card-text">You play against the computer, and the computer (theoretically) gets better as you play</p>
+                <p class="card-text">One bot plays against another, and they should (theoretically) both get better as they play</p>
               </div>
               <div class="card-footer">
-                <a id="progress-button" class="btn btn-primary float-right text-white">Rules of the game ▶</a>
+                <a id="progress-button" class="btn btn-primary float-right text-white">Rules ▶</a>
               </div>
             </div>
           </div>
@@ -70,8 +70,12 @@
                 <p id="post-game-message" class="card-text">You won! Continue?</p>
                 <h5 id="post-game-results-title" class="card-text mt-4">Results:</h5>
                 <div id="post-game-results-holder">
-                  <div id="post-game-results-won" class="result-bar card-text">Won:</div>
-                  <div id="post-game-results-lost" class="result-bar card-text float-right">Lost:</div>
+                  <div id="post-game-results-won" class="result-text card-text">Won:</div>
+                  <div id="post-game-results-lost" class="result-text card-text text-right float-right">Lost:</div>
+                  <div>
+                    <div id="post-game-results-won-bar" class="result-bar float-left"></div>
+                    <div id="post-game-results-lost-bar" class="result-bar float-right"></div>
+                  </div>
                 </div>
               </div>
               <div class="card-footer">

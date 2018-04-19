@@ -38,25 +38,16 @@ var trainComPlayHuman = function(){
 
 var trainHumanPlayHuman = function(){
 
-  if(genetic.evolutionIteration < genetic.numberOfEvolutionsEachRound){
+  if(genetic.evolutionIteration < genetic.numberOfEvolutionsBeforePlayerOnlyLearning){
     genetic.live();
     genetic.evolve();
-
-    if(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1) < genetic.numberOfEvolutionsEachRound){
-      genetic.evolutionIteration += 1;
-      drawProgressText("Training completion: " + Math.round(100*(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1)) / (genetic.numberOfEvolutionsEachRound)) + "%");
-      let thisGenome = genetic;
-      setTimeout(trainHumanPlayHuman, 1);
-    }else{
-      genetic.evolutionIteration += 1;
-
-      genetic.userControlled = true;
-
-      genetic.prepareDuel();
-    }
+    genetic.evolutionIteration += 1;
+    drawProgressText("Training completion: " + Math.round(100*(genetic.evolutionIteration / genetic.numberOfEvolutionsBeforePlayerOnlyLearning)) + "%");
+    let thisGenome = genetic;
+    setTimeout(trainHumanPlayHuman, 1);
 
   }else{
-    genetic.genomeIndex = 0;
+    genetic.genomeIndex = genetic.neat.population.length - 1;
     genetic.iterateGeneration();
     genetic.setInitialPositionValue();
 
