@@ -178,13 +178,13 @@ function Genetic(){
       this.drawMovement();
       this.drawPregameOverlay();
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
+      setTimeout(function(){thisGenetic.moveAndDraw() }, 10);
     }else if(!(this.finishLoop || this.animationTimer > this.timeLimit)){
         this.timeStep();
         this.drawMovement();
 
         var thisGenetic = this;
-        setTimeout(function(){thisGenetic.moveAndDraw() }, 50);
+        setTimeout(function(){thisGenetic.moveAndDraw() }, 10);
     }else{
       this.finishLoop = false;
 
