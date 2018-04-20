@@ -143,7 +143,7 @@ var drawTwoCircles = function(firstCircleX, firstCircleY, secondCircleX, secondC
     new Canvas(cvs).clear().setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,20,true,true).setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,10,true,true);
 }
 
-var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY){
+var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, isUserTagged, isOpponentTagged){
     var width = cvs.width;
     var height = cvs.height;
 
@@ -155,6 +155,7 @@ var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secon
     const thirdY = height * thirdCircleY;
     const smallCircleRadius = width/30;
     const largeCircleRadius = width/15;
+    const playerColor = isUserTagged ? "green" : "#003300";
 
     const canvas = new Canvas(cvs);
     canvas.clear();
@@ -163,7 +164,7 @@ var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secon
     canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
 }
 
-var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, fourthCircleX, fourthCircleY){
+var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, fourthCircleX, fourthCircleY, isUserTagged, isOpponentTagged){
     var width = cvs.width;
     var height = cvs.height;
 

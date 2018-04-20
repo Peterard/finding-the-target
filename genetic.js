@@ -5,8 +5,47 @@ var Architect = neataptic.architect; //This might need to be changed to neatapti
 var Network = neataptic.Network;
 var userNavigation = [];
 
+let touchStarted = false;
+
 document.getElementById("cvs").addEventListener("click", function(event){
   userNavigation = [event.layerX, event.layerY];
+})
+
+document.getElementById("cvs").addEventListener("touchstart", function(event){
+  userNavigation = [event.layerX, event.layerY];
+    touchStarted = true;
+})
+
+document.getElementById("cvs").addEventListener("mousedown", function(event){
+  userNavigation = [event.layerX, event.layerY];
+    touchStarted = true;
+})
+
+document.getElementById("cvs").addEventListener("touchend", function(event){
+  userNavigation = [event.layerX, event.layerY];
+  touchStarted = false;
+})
+
+document.getElementById("cvs").addEventListener("mouseup", function(event){
+  userNavigation = [event.layerX, event.layerY];
+  touchStarted = false;
+})
+
+document.getElementById("cvs").addEventListener("touchcancel", function(event){
+  userNavigation = [event.layerX, event.layerY];
+  touchStarted = false;
+})
+
+document.getElementById("cvs").addEventListener("touchmove", function(event){
+  if(touchStarted){
+    userNavigation = [event.layerX, event.layerY];
+  }
+})
+
+document.getElementById("cvs").addEventListener("mousemove", function(event){
+  if(touchStarted){
+    userNavigation = [event.layerX, event.layerY];
+  }
 })
 
 function Genetic(){
@@ -16,13 +55,13 @@ function Genetic(){
   startingInput: [],
   startingOpponentInput: [],
   userControlled: false,
-  timeSteps: 90,
-  maxInitialDistance: 80,
-  minDistance: 5,
-  tagDistance: 6,
+  timeSteps: 110,
+  maxInitialDistance: 20,
+  minDistance: 2.3,
+  tagDistance: 1.8,
   cooldownTimer: 20,
   startDelay: 50,
-  maxSpeed: 2,
+  maxSpeed: 0.2,
   countdown: 5,
   playerCooldown: 0,
   opponentCooldown: 0,
@@ -49,13 +88,13 @@ function Genetic(){
       2, // number of outputs
       null, // fitnessFunction - in this example we are calculating fitness inside live method
       {
-        elitism: 15, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
+        elitism: 6, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
         popsize: 15,
-        mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
+        mutationRate: 0.5, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
             6,
-            8,
+            26,
             2,
           ),
       },
@@ -66,13 +105,13 @@ function Genetic(){
       2, // number of outputs
       null, // fitnessFunction - in this example we are calculating fitness inside live method
       {
-        elitism: 15, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
+        elitism: 6, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
         popsize: 15,
-        mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
+        mutationRate: 0.5, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
             6,
-            8,
+            26,
             2,
           ),
       },
@@ -128,8 +167,6 @@ function Genetic(){
 
     this.setGenome(this.genomeIndex);
 
-    this.genomeIndex--;
-
     this.initializePositionBeforeTimeStep();
 
     this.finishLoop = false;
@@ -154,7 +191,7 @@ function Genetic(){
       this.determineFitness();
 
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.duel() }, 50);
+      setTimeout(function(){thisGenetic.duel() }, 30);
     }else if(!isGenerationFinished && !isMatchFinished && isStart){
       this.animationTimer++
 
@@ -162,9 +199,10 @@ function Genetic(){
       this.drawPregameOverlay();
 
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.duel() }, 50);
+      setTimeout(function(){thisGenetic.duel() }, 30);
     }
     else if(!isGenerationFinished){
+      this.genomeIndex--;
       this.prepareDuel();
     }else{
       this.evolve();
@@ -178,15 +216,17 @@ function Genetic(){
       this.drawMovement();
       this.drawPregameOverlay();
       var thisGenetic = this;
-      setTimeout(function(){thisGenetic.moveAndDraw() }, 10);
+      setTimeout(function(){thisGenetic.moveAndDraw() }, 30);
     }else if(!(this.finishLoop || this.animationTimer > this.timeLimit)){
         this.timeStep();
         this.drawMovement();
 
         var thisGenetic = this;
-        setTimeout(function(){thisGenetic.moveAndDraw() }, 10);
+        setTimeout(function(){thisGenetic.moveAndDraw() }, 30);
     }else{
       this.finishLoop = false;
+
+      touchStarted = false;
 
       if(this.animationTimer >= this.timeLimit && this.userControlled){
         this.gameResultWin = false;
@@ -202,6 +242,8 @@ function Genetic(){
 
     this.neat.sort();
     this.opponentNeat.sort();
+
+    touchStarted = false;
   },
   setInitialPositionValue: function(){
     const playerStartingBearing = Math.PI/2 - (2 * Math.random() * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1); //- Math.PI/30 + Math.random() * 2 * Math.PI / 15;
@@ -340,14 +382,18 @@ function Genetic(){
     const yPosition = this.makeSimulationPositionARatio(positionThisFrame)[1];
     const xOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[0];
     const yOpponentPosition = this.makeSimulationPositionARatio(opponentPositionThisFrame)[1];
+    const isUserTagged = this.playerCooldown >= 1;
+    const isOpponentTagged = this.opponentCooldown >= 1;
+
     if(userNavigation.length === 2 && this.userControlled){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
 
-      drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1]);
+      drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1], isUserTagged, isOpponentTagged);
       drawGenerationText(this.opponentNeat.generation);
+      console.log(this.genomeIndex);
       drawIterationText(this.genomeIndex);
     }else{
-      drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3);
+      drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, isUserTagged, isOpponentTagged);
       drawGenerationText(this.opponentNeat.generation);
       drawIterationText(this.genomeIndex);
     }
