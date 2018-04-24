@@ -4,11 +4,16 @@ var Architect = synaptic.Architect;
 let touchStarted = false;
 
 document.getElementById("cvs").addEventListener("click", function(event){
+  alert(event);
+  alert(event.pageX);
   event.preventDefault();
   userNavigation = [event.layerX, event.layerY];
 })
 
 document.getElementById("cvs").addEventListener("touchstart", function(event){
+  alert(Object.keys(event));
+  alert(event);
+  alert(event.pageX);
   event.preventDefault();
   userNavigation = [event.layerX, event.layerY];
     touchStarted = true;
