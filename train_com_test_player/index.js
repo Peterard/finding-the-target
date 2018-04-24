@@ -1,4 +1,10 @@
-const genetic = new Genetic();
+let genetic = new Genetic();
+
+const retrievedGenetic = JSON.parse(localStorage.getItem('genetic'));
+
+if (Genetic.prototype.isPrototypeOf(retrievedGenetic)){
+  genetic = retrievedGenetic;
+}
 
 genetic.generateRandomPopulation()
 
@@ -55,6 +61,8 @@ var gameFinish = function(){
   const gameResult = genetic.gameResultWin;
   const noOfWins = genetic.noOfWins;
   const noOfLosses = genetic.noOfLosses;
+
+  localStorage.setItem('genetic', JSON.stringify(genetic));
 
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";

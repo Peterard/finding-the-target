@@ -1,4 +1,10 @@
-const genetic = new Genetic();
+let genetic = new Genetic();
+
+const retrievedGenetic = JSON.parse(localStorage.getItem('genetic'));
+
+if (Genetic.prototype.isPrototypeOf(retrievedGenetic)){
+  genetic = retrievedGenetic;
+}
 
 genetic.generateRandomPopulation()
 
@@ -47,6 +53,8 @@ document.getElementById("progress-button").addEventListener("click", function(e)
 
 
 var gameFinish = function(){
+  localStorage.setItem('genetic', JSON.stringify(genetic));
+
   trainComPlayCom();
 }
 

@@ -1,34 +1,32 @@
-let genetic = new Genetic();
-genetic.generateRandomPopulation();
+let mimic = new Mimic();
+var Network = synaptic.Network;
+mimic.generatePopulation();
 
-const savedGeneticRaw = localStorage.getItem('genetic');
-const savedGeneticNeatRaw = localStorage.getItem('geneticNeat');
-const savedGeneticGenerationRaw = localStorage.getItem('geneticGeneration');
-const savedGeneticOpponentNeatRaw = localStorage.getItem('geneticOpponentNeat');
-const savedGeneticOpponentGenerationRaw = localStorage.getItem('geneticOpponentGeneration');
-const savedEvolutionIteration = localStorage.getItem('geneticEvolutionIteration');
+console.log(mimic);
 
-const isSavedDataAvailable = notUndefinedOrNull(savedGeneticRaw) && notUndefinedOrNull(savedGeneticNeatRaw)
-&& notUndefinedOrNull(savedGeneticGenerationRaw) && notUndefinedOrNull(savedGeneticOpponentNeatRaw)
-&& notUndefinedOrNull(savedGeneticOpponentGenerationRaw) && notUndefinedOrNull(savedEvolutionIteration);
+const savedMimicRaw = localStorage.getItem('mimic');
+const savedMimicOpponentNetworkRaw = localStorage.getItem('mimicOpponentNetwork');
+const savedEvolutionIteration = localStorage.getItem('mimicEvolutionIteration');
+
+const isSavedDataAvailable = notUndefinedOrNull(savedMimicRaw)
+                            && notUndefinedOrNull(savedMimicOpponentNetworkRaw)
+                            && notUndefinedOrNull(savedEvolutionIteration);
 
 function notUndefinedOrNull(input){
   return typeof input !== "undefined" && input !== null;
 }
 
-function loadSavedGeneticData(){
-  const savedGenetic = JSON.parse(savedGeneticRaw);
-  const savedGeneticNeat = JSON.parse(savedGeneticNeatRaw);
-  const savedGeneticOpponentNeat = JSON.parse(savedGeneticOpponentNeatRaw);
 
-  genetic["noOfWins"] = parseInt(savedGenetic["noOfWins"]);
-  genetic["noOfLosses"] = parseInt(savedGenetic["noOfLosses"]);
-  genetic["neat"].import(savedGeneticNeat);
-  genetic["neat"].generation = parseInt(savedGeneticGenerationRaw);
-  genetic["opponentNeat"].import(savedGeneticOpponentNeat);
-  genetic["opponentNeat"].generation = parseInt(savedGeneticOpponentGenerationRaw);
-  genetic["evolutionIteration"] = parseInt(savedEvolutionIteration);
-}
+// If a way to save the network is found, uncomment below
+// function loadSavedMimicData(){
+//   const savedMimic = JSON.parse(savedMimicRaw);
+//   const savedMimicOpponentNeat = JSON.parse(savedMimicOpponentNetworkRaw);
+//
+//   mimic["noOfWins"] = parseInt(savedMimic["noOfWins"]);
+//   mimic["noOfLosses"] = parseInt(savedMimic["noOfLosses"]);
+//   mimic["opponentNetwork"] = Network.fromJSON(savedMimicOpponentNeat);
+//   mimic["evolutionIteration"] = parseInt(savedEvolutionIteration);
+// }
 
 let iteration = 0;
 let finalOutcome = {};
@@ -55,29 +53,30 @@ const buttonText = ["Rules ▶", "How to play ▶", "Strategy ▶", "Versions �
 let pageNumber = 0;
 let pageNumberLimit = 4;
 
-if(isSavedDataAvailable){
-  pageNumberLimit = 5;
-  headerText.splice(0, 0, "Save Data");
-  titleText.splice(0, 0, "Local saved data has been detected");
-  contentText.splice(0, 0, "Would you like to load previously saved data?");
-  buttonText.splice(0, 0, "No");
-  document.getElementById("progress-button-load").classList.remove("d-none");
-  $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
-  $("#canvas-overlay .card-title").html(titleText[pageNumber]);
-  $("#canvas-overlay .card-text").html(contentText[pageNumber]);
-  $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
-
-  document.getElementById("progress-button-load").addEventListener("click", function(e){
-    e.preventDefault();
-    document.getElementById("progress-button-load").classList.add("d-none");
-    loadSavedGeneticData();
-    pageNumber += 1
-    $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
-    $("#canvas-overlay .card-title").html(titleText[pageNumber]);
-    $("#canvas-overlay .card-text").html(contentText[pageNumber]);
-    $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
-  });
-}
+// If a way to save the network is found, uncomment below
+// if(isSavedDataAvailable){
+//   pageNumberLimit = 5;
+//   headerText.splice(0, 0, "Save Data");
+//   titleText.splice(0, 0, "Local saved data has been detected");
+//   contentText.splice(0, 0, "Would you like to load previously saved data?");
+//   buttonText.splice(0, 0, "No");
+//   document.getElementById("progress-button-load").classList.remove("d-none");
+//   $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+//   $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+//   $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+//   $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+//
+//   document.getElementById("progress-button-load").addEventListener("click", function(e){
+//     e.preventDefault();
+//     document.getElementById("progress-button-load").classList.add("d-none");
+//     loadSavedMimicData();
+//     pageNumber += 1
+//     $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+//     $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+//     $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+//     $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+//   });
+// }
 
 document.getElementById("progress-button").addEventListener("click", function(e){
   e.preventDefault();
@@ -90,27 +89,25 @@ document.getElementById("progress-button").addEventListener("click", function(e)
     $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
   }else{
     $("#canvas-overlay").hide();
-    trainHumanPlayHuman();
+    trainDataPlayHuman();
   }
 });
 
 document.getElementById("play-again-button").addEventListener("click", function(e){
   e.preventDefault();
   document.getElementById("continue-canvas-overlay").classList.add("d-none");
-  trainHumanPlayHuman();
+  trainDataPlayHuman();
 });
 
 var roundOver = function(){
-  const gameResult = genetic.gameResultWin;
-  const noOfWins = genetic.noOfWins;
-  const noOfLosses = genetic.noOfLosses;
-
-  localStorage.setItem('genetic', JSON.stringify(genetic));
-  localStorage.setItem('geneticNeat', JSON.stringify(genetic.neat.export()));
-  localStorage.setItem('geneticGeneration', genetic.neat.generation);
-  localStorage.setItem('geneticOpponentNeat', JSON.stringify(genetic.opponentNeat.export()));
-  localStorage.setItem('geneticOpponentGeneration', genetic.opponentNeat.generation);
-  localStorage.setItem('geneticEvolutionIteration', genetic.evolutionIteration);
+  const gameResult = mimic.gameResultWin;
+  const noOfWins = mimic.noOfWins;
+  const noOfLosses = mimic.noOfLosses;
+  
+  // If a way to save the network is found, uncomment below
+  // localStorage.setItem('mimic', JSON.stringify(mimic));
+  // localStorage.setItem('mimicOpponentNetwork', JSON.stringify(mimic.opponentNetwork.toJSON()));
+  // localStorage.setItem('mimicEvolutionIteration', mimic.currentGen);
 
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";

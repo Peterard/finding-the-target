@@ -55,3 +55,15 @@ var trainHumanPlayHuman = function(){
 
   }
 };
+
+
+var trainDataPlayHuman = function(){
+  if(mimic.evolutionIteration < 1){
+    mimic.evolutionIteration++;
+    mimic.evolve();
+  }else{
+    mimic.evolve();
+    mimic.setInitialPositionValue();
+    mimic.prepareDuel();
+  }
+};

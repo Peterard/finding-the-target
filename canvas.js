@@ -25,11 +25,6 @@ function resize(){
   const screenMargin = 50;
 
   if(windowWidth >= desiredScreenRatio * windowHeight){
-    console.log("BOABIES");
-    console.log(document.getElementById('canvas-container').style.height);
-    console.log(windowHeight - screenMargin);
-    console.log(document.getElementById('canvas-container').style.width);
-    console.log(desiredScreenRatio * (windowHeight - screenMargin));
     cvs.height = windowHeight - screenMargin;
     cvs.width = desiredScreenRatio * (windowHeight - screenMargin);
     cvs.style.height = windowHeight - screenMargin + "px";
@@ -42,11 +37,6 @@ function resize(){
     cvs.style.height = ((canvasContainerWidth) / desiredScreenRatio) + "px";
     cvs.style.width = canvasContainerWidth + "px";
     document.getElementById('canvas-container').style.height = ((canvasContainerWidth) / desiredScreenRatio) + "px";
-    console.log("dimmer time");
-    console.log(document.getElementById('canvas-container').style.height);
-    console.log(canvasContainerWidth);
-    console.log(document.getElementById('canvas-container').style.width);
-    console.log(windowWidth - screenMargin);
   }
 }
 
@@ -143,7 +133,7 @@ var drawTwoCircles = function(firstCircleX, firstCircleY, secondCircleX, secondC
     new Canvas(cvs).clear().setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,20,true,true).setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,10,true,true);
 }
 
-var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, isUserTagged, isOpponentTagged){
+var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, playerCooldown, opponentCooldown){
     var width = cvs.width;
     var height = cvs.height;
 
@@ -155,16 +145,16 @@ var drawThreeCircles = function(firstCircleX, firstCircleY, secondCircleX, secon
     const thirdY = height * thirdCircleY;
     const smallCircleRadius = width/30;
     const largeCircleRadius = width/15;
-    const playerColor = isUserTagged ? "green" : "#003300";
+    const playerColor = playerCooldown <= 0 ? "yellow" : "rgb(100, 100, 0)";
+    const opponentColor = opponentCooldown <= 0 ? "pink" : "rgb(153, 0, 26)";
 
     const canvas = new Canvas(cvs);
-    canvas.clear();
     canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius,true,true);
-    canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius,true,true);
-    canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
+    canvas.setColor("fill", playerColor).setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius,true,true);
+    canvas.setColor("fill", opponentColor).setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
 }
 
-var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, fourthCircleX, fourthCircleY, isUserTagged, isOpponentTagged){
+var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, secondCircleY, thirdCircleX, thirdCircleY, fourthCircleX, fourthCircleY, playerCooldown, opponentCooldown){
     var width = cvs.width;
     var height = cvs.height;
 
@@ -178,17 +168,18 @@ var drawFourCircles = function(firstCircleX, firstCircleY, secondCircleX, second
     const fourthY = height * fourthCircleY;
     const smallCircleRadius = width/30;
     const largeCircleRadius = width/15;
+    const playerColor = playerCooldown <= 0 ? "yellow" : "rgb(100, 100, 0)";
+    const opponentColor = opponentCooldown <= 0 ? "pink" : "rgb(153, 0, 26)";
 
     const canvas = new Canvas(cvs);
-    canvas.clear();
     canvas.setColor("fill", "brown").setColor("stroke", "brown").circle(firstX,firstY,largeCircleRadius,true,true);
     canvas.setColor("fill", "white").setColor("stroke", "red").circle(fourthX, fourthY,smallCircleRadius,false,true);
     canvas.setColor("stroke", "red").line(fourthX, fourthY + smallCircleRadius, fourthX, fourthY + smallCircleRadius/2);
     canvas.setColor("stroke", "red").line(fourthX, fourthY - smallCircleRadius, fourthX, fourthY - smallCircleRadius/2);
     canvas.setColor("stroke", "red").line(fourthX + smallCircleRadius, fourthY, fourthX + smallCircleRadius/2, fourthY);
     canvas.setColor("stroke", "red").line(fourthX - smallCircleRadius, fourthY, fourthX - smallCircleRadius/2, fourthY);
-    canvas.setColor("fill", "yellow").setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius,true,true);
-    canvas.setColor("fill", "pink").setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
+    canvas.setColor("fill", playerColor).setColor("stroke", "green").circle(secondX, secondY,smallCircleRadius,true,true);
+    canvas.setColor("fill", opponentColor).setColor("stroke", "blue").circle(thirdX, thirdY,smallCircleRadius,true,true);
 }
 
 var drawText = function(inputText){
@@ -209,6 +200,23 @@ var drawProgressText = function(inputText){
   canvas.clear();
   canvas.font = "15px Arial";
   canvas.textDraw(inputText,width/8,height/2, "black");
+}
+
+var drawFinish = function(homeOriginX, homeOriginY, finishTimer, finishTimerDuration, gameResultWin){
+  var width = cvs.width;
+  var height = cvs.height;
+
+  const largeCircleRadius = height * (finishTimer / finishTimerDuration);
+  const firstX = homeOriginX * width;
+  const firstY = homeOriginY * height;
+  const color = gameResultWin ? "yellow" : "pink";
+
+  const canvas = new Canvas(cvs);
+  canvas.setColor("fill", color).setColor("stroke", color).circle(firstX,firstY,largeCircleRadius,true,true);
+  canvas.setColor("fill", color).setColor("stroke", color).circle(firstX,firstY,largeCircleRadius + 1,true,true);
+  canvas.setColor("fill", color).setColor("stroke", color).circle(firstX,firstY,largeCircleRadius + 2,true,true);
+  canvas.setColor("fill", color).setColor("stroke", color).circle(firstX,firstY,largeCircleRadius + 3,true,true);
+
 }
 
 var drawGenerationText = function(inputGen){
@@ -236,6 +244,10 @@ var drawIterationText = function(inputIteration){
 var drawPregameOverlayText = function(overlayTimerValue, overlayTimerColorValue){
   var width = cvs.width;
   var height = cvs.height;
+
+  if(overlayTimerValue < 1){
+    overlayTimerValue = 1;
+  }
 
   const canvas = new Canvas(cvs);
   canvas.textDrawBig(overlayTimerValue, width/2, height/2, "rgb(" + overlayTimerColorValue + ", " + (255 - overlayTimerColorValue) + ", "+ overlayTimerColorValue + ")");
