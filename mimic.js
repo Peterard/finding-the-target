@@ -3,6 +3,9 @@ var Architect = synaptic.Architect;
 
 let touchStarted = false;
 
+
+alert("Changed");
+
 document.getElementById("cvs").addEventListener("click", function(event){
   alert(event);
   alert(event.pageX);
