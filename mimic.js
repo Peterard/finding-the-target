@@ -11,9 +11,9 @@ document.getElementById("cvs").addEventListener("click", function(event){
 })
 
 document.getElementById("cvs").addEventListener("touchstart", function(event){
-  alert(Object.keys(event));
-  alert(event);
-  alert(event.pageX);
+  alert(Object.keys(event.originalEvent.targetTouches));
+  alert(event.originalEvent.targetTouches);
+  alert(event.originalEvent.targetTouches.pageX);
   event.preventDefault();
   userNavigation = [event.layerX, event.layerY];
     touchStarted = true;
