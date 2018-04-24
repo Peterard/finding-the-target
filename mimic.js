@@ -4,7 +4,7 @@ var Architect = synaptic.Architect;
 let touchStarted = false;
 
 
-alert("Changed");
+alert("Changed!");
 
 document.getElementById("cvs").addEventListener("click", function(event){
   alert(event);
@@ -14,9 +14,9 @@ document.getElementById("cvs").addEventListener("click", function(event){
 })
 
 document.getElementById("cvs").addEventListener("touchstart", function(event){
-  alert(Object.keys(event.originalEvent.targetTouches));
-  alert(event.originalEvent.targetTouches);
-  alert(event.originalEvent.targetTouches.pageX);
+  // alert(Object.keys(event.originalEvent.targetTouches));
+  // alert(event.originalEvent.targetTouches);
+  // alert(event.originalEvent.targetTouches.pageX);
   event.preventDefault();
   userNavigation = [event.layerX, event.layerY];
     touchStarted = true;
