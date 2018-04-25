@@ -2,8 +2,6 @@ let mimic = new Mimic();
 var Network = synaptic.Network;
 mimic.generatePopulation();
 
-console.log(mimic);
-
 const savedMimicRaw = localStorage.getItem('mimic');
 const savedMimicOpponentNetworkRaw = localStorage.getItem('mimicOpponentNetwork');
 const savedEvolutionIteration = localStorage.getItem('mimicEvolutionIteration');
@@ -103,7 +101,8 @@ var roundOver = function(){
   const gameResult = mimic.gameResultWin;
   const noOfWins = mimic.noOfWins;
   const noOfLosses = mimic.noOfLosses;
-  
+  const noOfGames = genetic.noOfGames;
+
   // If a way to save the network is found, uncomment below
   // localStorage.setItem('mimic', JSON.stringify(mimic));
   // localStorage.setItem('mimicOpponentNetwork', JSON.stringify(mimic.opponentNetwork.toJSON()));

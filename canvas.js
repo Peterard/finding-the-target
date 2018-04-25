@@ -202,14 +202,14 @@ var drawProgressText = function(inputText){
   canvas.textDraw(inputText,width/8,height/2, "black");
 }
 
-var drawFinish = function(homeOriginX, homeOriginY, finishTimer, finishTimerDuration, gameResultWin){
+var drawFinish = function(homeOriginX, homeOriginY, finishTimer, finishTimerDuration, gameResultWin, gameResultLoss){
   var width = cvs.width;
   var height = cvs.height;
 
   const largeCircleRadius = height * (finishTimer / finishTimerDuration);
   const firstX = homeOriginX * width;
   const firstY = homeOriginY * height;
-  const color = gameResultWin ? "yellow" : "pink";
+  const color = gameResultWin ? "yellow" : gameResultLoss ? "pink" : "grey";
 
   const canvas = new Canvas(cvs);
   canvas.setColor("fill", color).setColor("stroke", color).circle(firstX,firstY,largeCircleRadius,true,true);

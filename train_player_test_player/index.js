@@ -23,6 +23,7 @@ function loadSavedGeneticData(){
 
   genetic["noOfWins"] = parseInt(savedGenetic["noOfWins"]);
   genetic["noOfLosses"] = parseInt(savedGenetic["noOfLosses"]);
+  genetic["noOfGames"] = parseInt(savedGenetic["noOfGames"]);
   genetic["neat"].import(savedGeneticNeat);
   genetic["neat"].generation = parseInt(savedGeneticGenerationRaw);
   genetic["opponentNeat"].import(savedGeneticOpponentNeat);
@@ -104,6 +105,7 @@ var roundOver = function(){
   const gameResult = genetic.gameResultWin;
   const noOfWins = genetic.noOfWins;
   const noOfLosses = genetic.noOfLosses;
+  const noOfGames = genetic.noOfGames;
 
   localStorage.setItem('genetic', JSON.stringify(genetic));
   localStorage.setItem('geneticNeat', JSON.stringify(genetic.neat.export()));
@@ -115,8 +117,8 @@ var roundOver = function(){
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";
   document.getElementById("post-game-message").innerHTML = gameResult ? "You won! Continue?" : "You lost! Play again?";
-  document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / (noOfWins + noOfLosses))) + "%";
-  document.getElementById("post-game-results-lost-bar").style.width = Math.round(100 * (noOfLosses / (noOfWins + noOfLosses))) + "%";
+  document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / noOfGames))) + "% (" + noOfWins + "/" + noOfGames + ")";
+  document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / noOfGames))) + "% (" + noOfLosses + "/" + noOfGames + ")";
+  document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / noOfGames)) + "%";
+  document.getElementById("post-game-results-lost-bar").style.width = Math.round(100 * (noOfLosses / noOfGames)) + "%";
 }

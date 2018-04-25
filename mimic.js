@@ -1,64 +1,4 @@
-var userNavigation = [];
 var Architect = synaptic.Architect;
-
-let touchStarted = false;
-
-
-alert("Changed!!!");
-
-document.getElementById("cvs").addEventListener("click", function(event){
-  alert(event);
-  alert(event.pageX);
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-})
-
-document.getElementById("cvs").addEventListener("touchstart", function(event){
-  alert(Object.keys(event));
-  alert(event);
-  alert(event);
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-    touchStarted = true;
-})
-
-document.getElementById("cvs").addEventListener("mousedown", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-    touchStarted = true;
-})
-
-document.getElementById("cvs").addEventListener("touchend", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-  touchStarted = false;
-})
-
-document.getElementById("cvs").addEventListener("mouseup", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-  touchStarted = false;
-})
-
-document.getElementById("cvs").addEventListener("touchcancel", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-  touchStarted = false;
-})
-
-document.getElementById("cvs").addEventListener("touchmove", function(event){
-  event.preventDefault();
-  if(touchStarted){
-    userNavigation = [event.layerX, event.layerY];
-  }
-})
-
-document.getElementById("cvs").addEventListener("mousemove", function(event){
-  event.preventDefault();
-  if(touchStarted){
-    userNavigation = [event.layerX, event.layerY];
-  }
-})
 
 function Mimic(){
   return{
@@ -82,8 +22,10 @@ function Mimic(){
   timeLimit: 400,
   duelCounter: 0,
   gameResultWin: false,
+  gameResultLoss: false,
   noOfLosses: 0,
   noOfWins: 0,
+  noOfGames: 0,
   currentGen: 0,
   currentPosition: [],
   currentOpponentPosition: [],
@@ -137,13 +79,17 @@ function Mimic(){
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
     }else if(!isGenerationFinished){
+      if(this.animationTimer >= this.timeLimit){
+          this.gameResultWin = false;
+          this.gameResultLoss = this.userControlled === true;
+          this.noOfGames += this.userControlled ? 1 : 0;
+      }
       this.finishTimer = 0;
       this.drawMovement();
       this.prepareDuel();
     }else{
       this.finishTimer = 0;
       this.evolve();
-      console.log(JSON.stringify(this.trainingData));
       this.trainingData = [];
       roundOver();
     }
@@ -274,24 +220,32 @@ function Mimic(){
 
     this.finishLoop = false;
 
-    const bothPlayerAndOpponentOffTheScreen = ((playerDistanceToOrigin[0] > this.maxInitialDistance * desiredScreenRatio
-      || playerDistanceToOrigin[1] > this.maxInitialDistance)
-       && (opponentDistanceToOrigin[0] > this.maxInitialDistance * desiredScreenRatio
-         ||opponentDistanceToOrigin[1] > this.maxInitialDistance));
+    const bothPlayerAndOpponentOffTheScreen = (Math.abs(this.makeSimulationPositionARatio(this.currentPosition)[0]) > 0.53
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] > 0.73
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] < -0.33)
+       && (Math.abs(this.makeSimulationPositionARatio(this.currentOpponentPosition)[0]) > 0.53
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > 0.73
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -0.33);
 
     if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minDistance
       || bothPlayerAndOpponentOffTheScreen){
       this.finishLoop = true;
 
-    if(this.userControlled){
       if(opponentDistanceToOrigin < this.minDistance){
         this.gameResultWin = false;
+        this.gameResultLoss = true;
         this.noOfLosses += 1;
+        this.noOfGames += 1;
       }else if(playerDistanceToOrigin < this.minDistance){
         this.gameResultWin = true;
+        this.gameResultLoss = false;
         this.noOfWins += 1;
+        this.noOfGames += 1;
+      }else{
+        this.gameResultWin = false;
+        this.gameResultLoss = false;
+        this.noOfGames += 1;
       }
-    }
     }
   },
   drawMovement: function(){
@@ -306,14 +260,14 @@ function Mimic(){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin);
+        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
       drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.currentGen);
     }else{
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin);
+        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
       drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.currentGen);

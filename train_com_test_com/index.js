@@ -1,12 +1,35 @@
 let genetic = new Genetic();
+genetic.generateRandomPopulation();
 
-const retrievedGenetic = JSON.parse(localStorage.getItem('genetic'));
+const savedGeneticRaw = localStorage.getItem('genetic');
+const savedGeneticNeatRaw = localStorage.getItem('geneticNeat');
+const savedGeneticGenerationRaw = localStorage.getItem('geneticGeneration');
+const savedGeneticOpponentNeatRaw = localStorage.getItem('geneticOpponentNeat');
+const savedGeneticOpponentGenerationRaw = localStorage.getItem('geneticOpponentGeneration');
+const savedEvolutionIteration = localStorage.getItem('geneticEvolutionIteration');
 
-if (Genetic.prototype.isPrototypeOf(retrievedGenetic)){
-  genetic = retrievedGenetic;
+const isSavedDataAvailable = notUndefinedOrNull(savedGeneticRaw) && notUndefinedOrNull(savedGeneticNeatRaw)
+&& notUndefinedOrNull(savedGeneticGenerationRaw) && notUndefinedOrNull(savedGeneticOpponentNeatRaw)
+&& notUndefinedOrNull(savedGeneticOpponentGenerationRaw) && notUndefinedOrNull(savedEvolutionIteration);
+
+function notUndefinedOrNull(input){
+  return typeof input !== "undefined" && input !== null;
 }
 
-genetic.generateRandomPopulation()
+function loadSavedGeneticData(){
+  const savedGenetic = JSON.parse(savedGeneticRaw);
+  const savedGeneticNeat = JSON.parse(savedGeneticNeatRaw);
+  const savedGeneticOpponentNeat = JSON.parse(savedGeneticOpponentNeatRaw);
+
+  genetic["noOfWins"] = parseInt(savedGenetic["noOfWins"]);
+  genetic["noOfLosses"] = parseInt(savedGenetic["noOfLosses"]);
+  genetic["noOfGames"] = parseInt(savedGenetic["noOfGames"]);
+  genetic["neat"].import(savedGeneticNeat);
+  genetic["neat"].generation = parseInt(savedGeneticGenerationRaw);
+  genetic["opponentNeat"].import(savedGeneticOpponentNeat);
+  genetic["opponentNeat"].generation = parseInt(savedGeneticOpponentGenerationRaw);
+  genetic["evolutionIteration"] = parseInt(savedEvolutionIteration);
+}
 
 let iteration = 0;
 let finalOutcome = {};
@@ -16,7 +39,6 @@ let evolutionIterationProcess;
 let playProcess;
 let movementProcess;
 
-let pageNumber = 0;
 const headerText = ["Welcome", "Rules", "Strategy", "Other versions"];
 const titleText = ["This is a machine learning game", "There are three main rules to this game", "How will they play?", "Bot vs Player"];
 const contentText = ["One bot plays against another, and they should (theoretically) both get better as they play",
@@ -34,10 +56,38 @@ const nextPage = function(){
 
 }
 
+let pageNumber = 0;
+let pageNumberLimit = 3;
+
+if(isSavedDataAvailable){
+  pageNumberLimit = 4;
+  headerText.splice(0, 0, "Save Data");
+  titleText.splice(0, 0, "Local saved data has been detected");
+  contentText.splice(0, 0, "Would you like to load previously saved data?");
+  buttonText.splice(0, 0, "No");
+  document.getElementById("progress-button-load").classList.remove("d-none");
+  $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+  $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+  $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+  $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+
+  document.getElementById("progress-button-load").addEventListener("click", function(e){
+    e.preventDefault();
+    document.getElementById("progress-button-load").classList.add("d-none");
+    loadSavedGeneticData();
+    pageNumber += 1
+    $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
+    $("#canvas-overlay .card-title").html(titleText[pageNumber]);
+    $("#canvas-overlay .card-text").html(contentText[pageNumber]);
+    $("#canvas-overlay #progress-button").html(buttonText[pageNumber]);
+  });
+}
+
 // run this in 500ms (1 second)
 document.getElementById("progress-button").addEventListener("click", function(e){
   e.preventDefault();
-  if(pageNumber < 3){
+  if(pageNumber < pageNumberLimit){
+    document.getElementById("progress-button-load").classList.add("d-none");
     pageNumber += 1
     $("#canvas-overlay .card-header h2").html(headerText[pageNumber]);
     $("#canvas-overlay .card-title").html(titleText[pageNumber]);
@@ -54,6 +104,11 @@ document.getElementById("progress-button").addEventListener("click", function(e)
 
 var gameFinish = function(){
   localStorage.setItem('genetic', JSON.stringify(genetic));
+  localStorage.setItem('geneticNeat', JSON.stringify(genetic.neat.export()));
+  localStorage.setItem('geneticGeneration', genetic.neat.generation);
+  localStorage.setItem('geneticOpponentNeat', JSON.stringify(genetic.opponentNeat.export()));
+  localStorage.setItem('geneticOpponentGeneration', genetic.opponentNeat.generation);
+  localStorage.setItem('geneticEvolutionIteration', genetic.evolutionIteration);
 
   trainComPlayCom();
 }

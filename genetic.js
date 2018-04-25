@@ -1,60 +1,5 @@
 var Neat    = neataptic.Neat;
-var Methods = neataptic.Methods;
-var Config  = neataptic.Config;
 var Architect = neataptic.architect; //This might need to be changed to neataptic.Architect (i.e. capital letter) depending on the version of neaptic
-var Network = neataptic.Network;
-var userNavigation = [];
-
-let touchStarted = false;
-
-document.getElementById("cvs").addEventListener("click", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-})
-
-document.getElementById("cvs").addEventListener("touchstart", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-    touchStarted = true;
-})
-
-document.getElementById("cvs").addEventListener("mousedown", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-    touchStarted = true;
-})
-
-document.getElementById("cvs").addEventListener("touchend", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-  touchStarted = false;
-})
-
-document.getElementById("cvs").addEventListener("mouseup", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-  touchStarted = false;
-})
-
-document.getElementById("cvs").addEventListener("touchcancel", function(event){
-  event.preventDefault();
-  userNavigation = [event.layerX, event.layerY];
-  touchStarted = false;
-})
-
-document.getElementById("cvs").addEventListener("touchmove", function(event){
-  event.preventDefault();
-  if(touchStarted){
-    userNavigation = [event.layerX, event.layerY];
-  }
-})
-
-document.getElementById("cvs").addEventListener("mousemove", function(event){
-  event.preventDefault();
-  if(touchStarted){
-    userNavigation = [event.layerX, event.layerY];
-  }
-})
 
 function Genetic(){
   return{
@@ -85,12 +30,16 @@ function Genetic(){
   timeLimit: 400,
   duelCounter: 0,
   gameResultWin: false,
+  gameResultLoss: false,
   noOfLosses: 0,
   noOfWins: 0,
+  noOfGames: 0,
   currentPosition: [],
   currentOpponentPosition: [],
   finalOutcome: [],
   finalOpponentOutcome: [],
+
+  //Makes two Neat networks that we will use to train and play with
   generateRandomPopulation: function () {
     this.neat = new Neat(
       6, // number of inputs
@@ -99,7 +48,7 @@ function Genetic(){
       {
         elitism: 1, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
         popsize: 5,
-        mutationRate: 0.5, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
+        mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
             6,
@@ -112,11 +61,11 @@ function Genetic(){
     this.opponentNeat = new Neat(
       6, // number of inputs
       2, // number of outputs
-      null, // fitnessFunction - in this example we are calculating fitness inside live method
+      null, // fitnessFunction - we are calculating fitness inside live method
       {
         elitism: 1, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
         popsize: 5,
-        mutationRate: 0.5, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
+        mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
             6,
@@ -130,8 +79,10 @@ function Genetic(){
     // increment generation index
     this.iterateGeneration();
 
+    // sets the initial position of the two players in the game
     this.setInitialPositionValue();
 
+    // temporarily saves the userControlled setting. Restores it after computer training
     const isUserControlled = this.userControlled;
     // loop through each genome
     for (let genomeIndex in this.neat.population) {
@@ -184,9 +135,7 @@ function Genetic(){
 
       this.userControlled = true;
     }
-
     this.duel();
-
   },
   duel: function(){
     const isGenerationFinished = this.genomeIndex < 0;
@@ -217,6 +166,11 @@ function Genetic(){
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
     }else if(!isGenerationFinished){
+      if(this.animationTimer >= this.timeLimit){
+          this.gameResultWin = false;
+          this.gameResultLoss = this.userControlled === true;
+          this.noOfGames += this.userControlled ? 1 : 0;
+      }
       this.finishTimer = 0;
       this.genomeIndex--;
       this.drawMovement();
@@ -246,16 +200,16 @@ function Genetic(){
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.moveAndDraw() }, 30);
     } else {
+      if(this.animationTimer >= this.timeLimit){
+          this.gameResultWin = false;
+          this.gameResultLoss = this.userControlled === true;
+          this.noOfGames += this.userControlled ? 1 : 0;
+      }
       this.finishTimer = 0;
       this.drawMovement();
       this.finishLoop = false;
 
       touchStarted = false;
-
-      if(this.animationTimer >= this.timeLimit && this.userControlled){
-        this.gameResultWin = false;
-        this.noOfLosses += 1;
-      }
 
       gameFinish();
     }
@@ -301,9 +255,6 @@ function Genetic(){
     // We say that fitness is inversely proportional to the distance from the origin, and proportional to the opoonent's distance to the origin
     this.genome.score += ((1 + finalOpponentDistanceToOrigin) / (1 + finalPlayerDistanceToOrigin)) * (1 * (this.playerTagSuccesses + 1)) * (1 / (this.opponentTagSuccesses + 1));//(5/(0.01 + finalPlayerDistanceToOrigin)) + (finalPlayerDistanceToOrigin < this.minDistance && finalOpponentDistanceToOrigin > finalPlayerDistanceToOrigin ? 1 : 0);//(1 + finalOpponentDistanceToOrigin) / (1 + finalPlayerDistanceToOrigin);
     this.opponentGenome.score += ((1 + finalPlayerDistanceToOrigin) / (1 + finalOpponentDistanceToOrigin)) * (1 * (this.playerTagSuccesses + 1)) * (1 / (this.opponentTagSuccesses + 1));//(5/(0.01 + finalOpponentDistanceToOrigin)) + (finalOpponentDistanceToOrigin < this.minDistance && finalOpponentDistanceToOrigin < finalPlayerDistanceToOrigin ? 1 : 0);//(1 + finalPlayerDistanceToOrigin) / (1 + finalOpponentDistanceToOrigin);
-
-    console.log(this.genome.score);
-    console.log(this.opponentGenome.score);
   },
   setGenome: function(genomeIndex){
     this.genome = this.neat.population[genomeIndex]
@@ -382,24 +333,34 @@ function Genetic(){
 
     this.finishLoop = false;
 
-    const bothPlayerAndOpponentOffTheScreen = ((playerDistanceToOrigin[0] > this.maxInitialDistance * desiredScreenRatio
-      || playerDistanceToOrigin[1] > this.maxInitialDistance)
-       && (opponentDistanceToOrigin[0] > this.maxInitialDistance * desiredScreenRatio
-         ||opponentDistanceToOrigin[1] > this.maxInitialDistance));
+    const bothPlayerAndOpponentOffTheScreen = (Math.abs(this.makeSimulationPositionARatio(this.currentPosition)[0]) > 0.53
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] > 0.73
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] < -0.33)
+       && (Math.abs(this.makeSimulationPositionARatio(this.currentOpponentPosition)[0]) > 0.53
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > 0.73
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -0.33);
 
     if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minDistance
       || bothPlayerAndOpponentOffTheScreen){
       this.finishLoop = true;
 
-    if(this.userControlled){
-      if(opponentDistanceToOrigin < this.minDistance){
-        this.gameResultWin = false;
-        this.noOfLosses += 1;
-      }else if(playerDistanceToOrigin < this.minDistance){
-        this.gameResultWin = true;
-        this.noOfWins += 1;
+      if(this.userControlled){
+        if(opponentDistanceToOrigin < this.minDistance){
+          this.gameResultWin = false;
+          this.gameResultLoss = true;
+          this.noOfLosses += 1;
+          this.noOfGames += 1;
+        }else if(playerDistanceToOrigin < this.minDistance){
+          this.gameResultWin = true;
+          this.gameResultLoss = false;
+          this.noOfWins += 1;
+          this.noOfGames += 1;
+        }else{
+          this.gameResultWin = false;
+          this.gameResultLoss = false;
+          this.noOfGames += 1;
+        }
       }
-    }
     }
   },
   drawMovement: function(){
@@ -414,7 +375,7 @@ function Genetic(){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin);
+        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
       drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.opponentNeat.generation);
@@ -422,7 +383,7 @@ function Genetic(){
     }else{
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin);
+        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
       drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.opponentNeat.generation);
@@ -446,8 +407,6 @@ function Genetic(){
     // we want to push neat.elitism number of best genomes into the new population automatically
     let numberOfElitesAdded = 0;
     for (let i = 0; i < neat.elitism; i++) {
-      console.log(i);
-      console.log(neat.population[i]);
       if(!isNaN(neat.population[i].score)){
         newPopulation.push(neat.population[i])
         numberOfElitesAdded += 1
