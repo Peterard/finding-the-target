@@ -8,8 +8,8 @@ function Mimic(){
   userControlled: false,
   timeSteps: 110,
   maxInitialDistance: 20,
-  minDistance: 2.3,
-  tagDistance: 1.8,
+  minDistance: 1.9,
+  tagDistance: 1.3,
   cooldownTimer: 20,
   startDelay: 50,
   maxSpeed: 0.2,
@@ -17,6 +17,9 @@ function Mimic(){
   playerCooldown: 0,
   opponentCooldown: 0,
   finishTimer: 0,
+  zoomCoefficient: 1.6,
+  screenXOffset: 0.5,
+  screenYOffset: 0.8,
   finishTimerDuration: 30,
   animationTimer: 0,
   timeLimit: 400,
@@ -73,17 +76,17 @@ function Mimic(){
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
     } else if(this.finishTimer < this.finishTimerDuration){
+      if(this.finishTimer === 0 && this.animationTimer >= this.timeLimit){
+          this.gameResultWin = false;
+          this.gameResultLoss = this.userControlled === true;
+          this.noOfGames += this.userControlled ? 1 : 0;
+      }
       this.finishTimer ++;
       this.drawMovement();
 
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
     }else if(!isGenerationFinished){
-      if(this.animationTimer >= this.timeLimit){
-          this.gameResultWin = false;
-          this.gameResultLoss = this.userControlled === true;
-          this.noOfGames += this.userControlled ? 1 : 0;
-      }
       this.finishTimer = 0;
       this.drawMovement();
       this.prepareDuel();
@@ -95,7 +98,7 @@ function Mimic(){
     }
   },
   setInitialPositionValue: function(){
-    const playerStartingBearing = Math.PI/2 - (2 * Math.random() * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1); //- Math.PI/30 + Math.random() * 2 * Math.PI / 15;
+    const playerStartingBearing = 3 * Math.PI/2 - (2 * Math.random() * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1); //- Math.PI/30 + Math.random() * 2 * Math.PI / 15;
     const opponentStartingBearing = playerStartingBearing + (2 * Math.round(Math.random() + 1) - 3) * (Math.PI / 18);
 
     const playerInitialXCoordinate = this.maxInitialDistance * Math.cos(playerStartingBearing);
@@ -120,14 +123,14 @@ function Mimic(){
   },
   makeRatioASimulationPosition: function(ratio){
     simPosition = [];
-    simPosition[0] = (ratio[0] - 0.5) * (2 * this.maxInitialDistance * desiredScreenRatio);
-    simPosition[1] = (ratio[1] - 0.3) * (2 * this.maxInitialDistance);
+    simPosition[0] = (ratio[0] - this.screenXOffset) * (this.zoomCoefficient * this.maxInitialDistance * desiredScreenRatio);
+    simPosition[1] = (ratio[1] - this.screenYOffset) * (this.zoomCoefficient * this.maxInitialDistance);
     return simPosition;
   },
   makeSimulationPositionARatio: function(simPosition){
     ratio = [];
-    ratio[0] = simPosition[0] / (2 * this.maxInitialDistance * desiredScreenRatio);
-    ratio[1] = simPosition[1] / (2 * this.maxInitialDistance);
+    ratio[0] = simPosition[0] / (this.zoomCoefficient * this.maxInitialDistance * desiredScreenRatio);
+    ratio[1] = simPosition[1] / (this.zoomCoefficient * this.maxInitialDistance);
     return ratio;
   },
   timeStep: function(){
@@ -220,12 +223,12 @@ function Mimic(){
 
     this.finishLoop = false;
 
-    const bothPlayerAndOpponentOffTheScreen = (Math.abs(this.makeSimulationPositionARatio(this.currentPosition)[0]) > 0.53
-      || this.makeSimulationPositionARatio(this.currentPosition)[1] > 0.73
-      || this.makeSimulationPositionARatio(this.currentPosition)[1] < -0.33)
-       && (Math.abs(this.makeSimulationPositionARatio(this.currentOpponentPosition)[0]) > 0.53
-         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > 0.73
-         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -0.33);
+    const bothPlayerAndOpponentOffTheScreen = (Math.abs(this.makeSimulationPositionARatio(this.currentPosition)[0]) > (this.screenXOffset + 0.03)
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] > (1 - this.screenYOffset + 0.03)
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] < -(this.screenYOffset + 0.03) )
+       && (Math.abs(this.makeSimulationPositionARatio(this.currentOpponentPosition)[0]) > (this.screenXOffset + 0.03)
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > (1 - this.screenYOffset + 0.03)
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -(this.screenYOffset + 0.03));
 
     if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minDistance
       || bothPlayerAndOpponentOffTheScreen){
@@ -260,16 +263,16 @@ function Mimic(){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
+        drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
-      drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
+      drawFourCircles(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.currentGen);
     }else{
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
+        drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
-      drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, this.playerCooldown, this.opponentCooldown);
+      drawThreeCircles(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.currentGen);
     }
   },

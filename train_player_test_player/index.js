@@ -117,6 +117,7 @@ var roundOver = function(){
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";
   document.getElementById("post-game-message").innerHTML = gameResult ? "You won! Continue?" : "You lost! Play again?";
+  document.getElementById("post-game-results-played").innerHTML =  "Played: " + noOfGames;
   document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / noOfGames))) + "% (" + noOfWins + "/" + noOfGames + ")";
   document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / noOfGames))) + "% (" + noOfLosses + "/" + noOfGames + ")";
   document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / noOfGames)) + "%";

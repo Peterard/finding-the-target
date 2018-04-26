@@ -101,7 +101,7 @@ var roundOver = function(){
   const gameResult = mimic.gameResultWin;
   const noOfWins = mimic.noOfWins;
   const noOfLosses = mimic.noOfLosses;
-  const noOfGames = genetic.noOfGames;
+  const noOfGames = mimic.noOfGames;
 
   // If a way to save the network is found, uncomment below
   // localStorage.setItem('mimic', JSON.stringify(mimic));
@@ -111,6 +111,7 @@ var roundOver = function(){
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";
   document.getElementById("post-game-message").innerHTML = gameResult ? "You won! Continue?" : "You lost! Play again?";
+  document.getElementById("post-game-results-played").innerHTML =  "Played: " + noOfGames;
   document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
   document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
   document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / (noOfWins + noOfLosses))) + "%";

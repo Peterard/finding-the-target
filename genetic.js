@@ -10,8 +10,8 @@ function Genetic(){
   userControlled: false,
   timeSteps: 110,
   maxInitialDistance: 20,
-  minDistance: 2.3,
-  tagDistance: 1.8,
+  minDistance: 1.9,
+  tagDistance: 1.3,
   cooldownTimer: 20,
   startDelay: 50,
   maxSpeed: 0.2,
@@ -22,10 +22,13 @@ function Genetic(){
   finishTimerDuration: 30,
   evolutionIterationProcess: null,
   movementProcess: null,
+  zoomCoefficient: 1.6, // The bigger it is, the smaller the field appears
+  screenXOffset: 0.5,
+  screenYOffset: 0.8,
   evolutionIteration: 0,
   genomeIndex: 0,
-  numberOfEvolutionsEachRound: 2,
-  numberOfEvolutionsBeforePlayerOnlyLearning: 2,
+  numberOfEvolutionsEachRound: 250,
+  numberOfEvolutionsBeforePlayerOnlyLearning: 250,
   animationTimer: 0,
   timeLimit: 400,
   duelCounter: 0,
@@ -46,8 +49,8 @@ function Genetic(){
       2, // number of outputs
       null, // fitnessFunction - in this example we are calculating fitness inside live method
       {
-        elitism: 1, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
-        popsize: 5,
+        elitism: 10, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
+        popsize: 50,
         mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
@@ -63,8 +66,8 @@ function Genetic(){
       2, // number of outputs
       null, // fitnessFunction - we are calculating fitness inside live method
       {
-        elitism: 1, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
-        popsize: 5,
+        elitism: 10, // this sets how many genomes in population will be passed into next generation without mutation https://www.researchgate.net/post/What_is_meant_by_the_term_Elitism_in_the_Genetic_Algorithm
+        popsize: 50,
         mutationRate: 0.3, // sets the mutation rate. If set to 0.3, 30% of the new population will be mutated. Default is 0.3
         network: // https://wagenaartje.github.io/neataptic/docs/architecture/network/
           new Architect.Random(
@@ -92,7 +95,7 @@ function Genetic(){
 
       this.userControlled = false;
 
-      for(let repeatCounter = 0; repeatCounter < 5; repeatCounter++){
+      for(let repeatCounter = 0; repeatCounter < 1; repeatCounter++){
         this.initializePositionBeforeTimeStep();
 
         for (let i = 0; i < this.timeSteps; i++){
@@ -147,7 +150,6 @@ function Genetic(){
 
       this.timeStep();
       this.drawMovement();
-      this.determineFitness();
 
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
@@ -160,23 +162,26 @@ function Genetic(){
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
     } else if(this.finishTimer < this.finishTimerDuration){
+      if(this.finishTimer === 0 && this.animationTimer >= this.timeLimit){
+          this.gameResultWin = false;
+          this.gameResultLoss = this.userControlled === true;
+          this.noOfGames += this.userControlled ? 1 : 0;
+      }
       this.finishTimer ++;
+
       this.drawMovement();
 
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.duel() }, 30);
     }else if(!isGenerationFinished){
-      if(this.animationTimer >= this.timeLimit){
-          this.gameResultWin = false;
-          this.gameResultLoss = this.userControlled === true;
-          this.noOfGames += this.userControlled ? 1 : 0;
-      }
       this.finishTimer = 0;
+      this.determineFitness();
       this.genomeIndex--;
       this.drawMovement();
       this.prepareDuel();
     }else{
       this.finishTimer = 0;
+      this.determineFitness();
       this.evolve();
       roundOver();
     }
@@ -195,16 +200,16 @@ function Genetic(){
         var thisGenetic = this;
         setTimeout(function(){thisGenetic.moveAndDraw() }, 30);
     }else if(this.finishTimer < this.finishTimerDuration){
+      if(this.finishTimer === 0 && this.animationTimer >= this.timeLimit){
+          this.gameResultWin = false;
+          this.gameResultLoss = this.userControlled === true;
+          this.noOfGames += this.userControlled ? 1 : 0;
+      }
       this.finishTimer++;
       this.drawMovement();
       var thisGenetic = this;
       setTimeout(function(){thisGenetic.moveAndDraw() }, 30);
     } else {
-      if(this.animationTimer >= this.timeLimit){
-          this.gameResultWin = false;
-          this.gameResultLoss = this.userControlled === true;
-          this.noOfGames += this.userControlled ? 1 : 0;
-      }
       this.finishTimer = 0;
       this.drawMovement();
       this.finishLoop = false;
@@ -224,7 +229,7 @@ function Genetic(){
     touchStarted = false;
   },
   setInitialPositionValue: function(){
-    const playerStartingBearing = Math.PI/2 - (2 * Math.random() * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1); //- Math.PI/30 + Math.random() * 2 * Math.PI / 15;
+    const playerStartingBearing = 3*Math.PI/2 - (2 * Math.random() * Math.PI/10  - Math.PI/10) * (2 * Math.round(Math.random()) - 1); //- Math.PI/30 + Math.random() * 2 * Math.PI / 15;
     const opponentStartingBearing = playerStartingBearing + (2 * Math.round(Math.random() + 1) - 3) * (Math.PI / 18);
 
     const playerInitialXCoordinate = this.maxInitialDistance * Math.cos(playerStartingBearing);
@@ -253,8 +258,13 @@ function Genetic(){
 
     // calculate fitness for each genome
     // We say that fitness is inversely proportional to the distance from the origin, and proportional to the opoonent's distance to the origin
-    this.genome.score += ((1 + finalOpponentDistanceToOrigin) / (1 + finalPlayerDistanceToOrigin)) * (1 * (this.playerTagSuccesses + 1)) * (1 / (this.opponentTagSuccesses + 1));//(5/(0.01 + finalPlayerDistanceToOrigin)) + (finalPlayerDistanceToOrigin < this.minDistance && finalOpponentDistanceToOrigin > finalPlayerDistanceToOrigin ? 1 : 0);//(1 + finalOpponentDistanceToOrigin) / (1 + finalPlayerDistanceToOrigin);
-    this.opponentGenome.score += ((1 + finalPlayerDistanceToOrigin) / (1 + finalOpponentDistanceToOrigin)) * (1 * (this.playerTagSuccesses + 1)) * (1 / (this.opponentTagSuccesses + 1));//(5/(0.01 + finalOpponentDistanceToOrigin)) + (finalOpponentDistanceToOrigin < this.minDistance && finalOpponentDistanceToOrigin < finalPlayerDistanceToOrigin ? 1 : 0);//(1 + finalPlayerDistanceToOrigin) / (1 + finalOpponentDistanceToOrigin);
+    const playerWinReward = ((1 + Math.pow(finalOpponentDistanceToOrigin, 2)) / (1 + Math.pow(finalPlayerDistanceToOrigin,2)));
+    const playerLoseReward = ((1 + finalOpponentDistanceToOrigin) / (1 + finalPlayerDistanceToOrigin));
+    const opponentWinReward = 1 / playerWinReward;
+    const opponentLoseReward = 1 / playerLoseReward;
+
+    this.genome.score += finalOpponentDistanceToOrigin > finalPlayerDistanceToOrigin ? playerWinReward : playerLoseReward;// * (1 * (this.playerTagSuccesses + 1)) * (1 / (this.opponentTagSuccesses + 1));//(5/(0.01 + finalPlayerDistanceToOrigin)) + (finalPlayerDistanceToOrigin < this.minDistance && finalOpponentDistanceToOrigin > finalPlayerDistanceToOrigin ? 1 : 0);//(1 + finalOpponentDistanceToOrigin) / (1 + finalPlayerDistanceToOrigin);
+    this.opponentGenome.score += finalOpponentDistanceToOrigin > finalPlayerDistanceToOrigin ? opponentWinReward : opponentLoseReward;// * (1 * (this.playerTagSuccesses + 1)) * (1 / (this.opponentTagSuccesses + 1));//(5/(0.01 + finalOpponentDistanceToOrigin)) + (finalOpponentDistanceToOrigin < this.minDistance && finalOpponentDistanceToOrigin < finalPlayerDistanceToOrigin ? 1 : 0);//(1 + finalPlayerDistanceToOrigin) / (1 + finalOpponentDistanceToOrigin);
   },
   setGenome: function(genomeIndex){
     this.genome = this.neat.population[genomeIndex]
@@ -265,14 +275,14 @@ function Genetic(){
   },
   makeRatioASimulationPosition: function(ratio){
     simPosition = [];
-    simPosition[0] = (ratio[0] - 0.5) * (2 * this.maxInitialDistance * desiredScreenRatio);
-    simPosition[1] = (ratio[1] - 0.3) * (2 * this.maxInitialDistance);
+    simPosition[0] = (ratio[0] - this.screenXOffset) * (this.zoomCoefficient * this.maxInitialDistance * desiredScreenRatio);
+    simPosition[1] = (ratio[1] - this.screenYOffset) * (this.zoomCoefficient * this.maxInitialDistance);
     return simPosition;
   },
   makeSimulationPositionARatio: function(simPosition){
     ratio = [];
-    ratio[0] = simPosition[0] / (2 * this.maxInitialDistance * desiredScreenRatio);
-    ratio[1] = simPosition[1] / (2 * this.maxInitialDistance);
+    ratio[0] = simPosition[0] / (this.zoomCoefficient * this.maxInitialDistance * desiredScreenRatio);
+    ratio[1] = simPosition[1] / (this.zoomCoefficient * this.maxInitialDistance);
     return ratio;
   },
   timeStep: function(){
@@ -333,12 +343,12 @@ function Genetic(){
 
     this.finishLoop = false;
 
-    const bothPlayerAndOpponentOffTheScreen = (Math.abs(this.makeSimulationPositionARatio(this.currentPosition)[0]) > 0.53
-      || this.makeSimulationPositionARatio(this.currentPosition)[1] > 0.73
-      || this.makeSimulationPositionARatio(this.currentPosition)[1] < -0.33)
-       && (Math.abs(this.makeSimulationPositionARatio(this.currentOpponentPosition)[0]) > 0.53
-         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > 0.73
-         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -0.33);
+    const bothPlayerAndOpponentOffTheScreen = (Math.abs(this.makeSimulationPositionARatio(this.currentPosition)[0]) > (this.screenXOffset + 0.03)
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] > (1 - this.screenYOffset + 0.03)
+      || this.makeSimulationPositionARatio(this.currentPosition)[1] < -(this.screenYOffset + 0.03))
+       && (Math.abs(this.makeSimulationPositionARatio(this.currentOpponentPosition)[0]) > (this.screenXOffset + 0.03)
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] > (1 - this.screenYOffset + 0.03)
+         || this.makeSimulationPositionARatio(this.currentOpponentPosition)[1] < -(this.screenYOffset + 0.03));
 
     if(playerDistanceToOrigin < this.minDistance || opponentDistanceToOrigin < this.minDistance
       || bothPlayerAndOpponentOffTheScreen){
@@ -375,17 +385,17 @@ function Genetic(){
       const userTarget = canvasCoordinatesToCanvasRatio(userNavigation);
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
+        drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
-      drawFourCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
+      drawFourCircles(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, userTarget[0], userTarget[1], this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.opponentNeat.generation);
       drawIterationText(this.genomeIndex);
     }else{
       clearCanvas();
       if(this.finishTimer > 0){
-        drawFinish(0.5, 0.3, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
+        drawFinish(this.screenXOffset, this.screenYOffset, this.finishTimer, this.finishTimerDuration, this.gameResultWin, this.gameResultLoss);
       }
-      drawThreeCircles(0.5, 0.3, xPosition + 0.5, yPosition + 0.3, xOpponentPosition + 0.5, yOpponentPosition + 0.3, this.playerCooldown, this.opponentCooldown);
+      drawThreeCircles(this.screenXOffset, this.screenYOffset, xPosition + this.screenXOffset, yPosition + this.screenYOffset, xOpponentPosition + this.screenXOffset, yOpponentPosition + this.screenYOffset, this.playerCooldown, this.opponentCooldown);
       drawGenerationText(this.opponentNeat.generation);
       drawIterationText(this.genomeIndex);
     }

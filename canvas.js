@@ -14,17 +14,9 @@ function resize(){
   let canvasContainerHeight = $('#canvas-container').height();
   let canvasContainerWidth = $('#canvas-container').width();
 
-  // if(windowHeight < minHeight){
-  //   windowHeight = minHeight;
-  // }
-  //
-  // if(windowWidth < minWidth){
-  //   windowWidth = minWidth;
-  // }
-
   const screenMargin = 50;
 
-  if(windowWidth >= desiredScreenRatio * windowHeight){
+  if(windowWidth >= (desiredScreenRatio) * windowHeight){
     cvs.height = windowHeight - screenMargin;
     cvs.width = desiredScreenRatio * (windowHeight - screenMargin);
     cvs.style.height = windowHeight - screenMargin + "px";
@@ -69,7 +61,7 @@ function Canvas(canvas) {
 
     // Draw a rectangle
     this.rectangle = function(x, y, width, height, fill, stroke) {
-        context.ctx.rect(x, y, width, height);
+        context.rect(x, y, width, height);
 
         if (fill)   { context.fill(); }
         if (stroke) { context.stroke(); }
@@ -192,13 +184,15 @@ var drawText = function(inputText){
   canvas.textDrawBig(inputText,width/2,height/2, "black");
 }
 
-var drawProgressText = function(inputText){
+var drawProgressText = function(completionPercentage){
   var width = cvs.width;
   var height = cvs.height;
 
   const canvas = new Canvas(cvs);
   canvas.clear();
   canvas.font = "15px Arial";
+  const inputText = "Training completion: " + completionPercentage + "%";
+  canvas.setColor("fill", "#82b1ff").setColor("stroke", "white").rectangle(width/11, height/2.17, (completionPercentage/100)*(9*width)/11, height/19, true, false);
   canvas.textDraw(inputText,width/8,height/2, "black");
 }
 

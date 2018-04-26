@@ -113,6 +113,8 @@ var gameFinish = function(){
   const noOfLosses = genetic.noOfLosses;
   const noOfGames = genetic.noOfGames;
 
+  const isFinalGameOfRound = genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 5) < genetic.numberOfEvolutionsEachRound;
+
   localStorage.setItem('genetic', JSON.stringify(genetic));
   localStorage.setItem('geneticNeat', JSON.stringify(genetic.neat.export()));
   localStorage.setItem('geneticGeneration', genetic.neat.generation);
@@ -120,14 +122,31 @@ var gameFinish = function(){
   localStorage.setItem('geneticOpponentGeneration', genetic.opponentNeat.generation);
   localStorage.setItem('geneticEvolutionIteration', genetic.evolutionIteration);
 
-
   document.getElementById("continue-canvas-overlay").classList.remove("d-none");
   document.getElementById("post-game-message-title").innerHTML = gameResult ? "Congratulations!" : "Unlucky!";
   document.getElementById("post-game-message").innerHTML = gameResult ? "You won! Continue?" : "You lost! Play again?";
-  document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / (noOfWins + noOfLosses)))) + "% (" + noOfWins + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / (noOfWins + noOfLosses)))) + "% (" + noOfLosses + "/" + (noOfWins + noOfLosses) + ")";
-  document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / (noOfWins + noOfLosses))) + "%";
-  document.getElementById("post-game-results-lost-bar").style.width = Math.round(100 * (noOfLosses / (noOfWins + noOfLosses))) + "%";
+  document.getElementById("post-game-results-played").innerHTML =  "Played: " + noOfGames;
+  document.getElementById("post-game-results-won").innerHTML =  "Won: " + Math.round((100 * (noOfWins / (noOfGames)))) + "% (" + noOfWins + "/" + (noOfGames) + ")";
+  document.getElementById("post-game-results-lost").innerHTML = "Lost: " + Math.round((100 * (noOfLosses / (noOfGames)))) + "% (" + noOfLosses + "/" + (noOfGames) + ")";
+  document.getElementById("post-game-results-won-bar").style.width = Math.round(100 * (noOfWins / (noOfGames))) + "%";
+  document.getElementById("post-game-results-lost-bar").style.width = Math.round(100 * (noOfLosses / (noOfGames))) + "%";
+
+  if(noOfWins <= 0){
+    document.getElementById("post-game-results-won-bar").classList.add("d-none");
+  }else{
+    document.getElementById("post-game-results-won-bar").classList.remove("d-none");
+  }
+
+  if(noOfLosses <= 0){
+    document.getElementById("post-game-results-lost-bar").classList.add("d-none")
+  }else{
+    document.getElementById("post-game-results-lost-bar").classList.remove("d-none");
+  }
+
+  if(!isFinalGameOfRound){
+    document.getElementById("continue-canvas-overlay").classList.add("d-none");
+    trainComPlayHuman();
+  }
 }
 
 //genetic.play();
