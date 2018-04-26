@@ -46,7 +46,7 @@ const contentText = ["You play against the computer, and the computer (theoretic
 "Will you make a beeline for the target? Will you be agressive and first seek to subdue your opponent by tagging them before going towards the objective? And what will the computer do?",
 "If you would like to relax and watch two computers duel it out instead, then please feel free to try the <a href='../train_com_test_com/index.html'>Com vs Com Version</a><br><br>\
 If you want to go head to head against the bots without the hassle of having to watch them get better slowly, then go ahead and try at <a href='../train_com_test_player/index.html'>Bot vs Player Version</a>"];
-const buttonText = ["Rules ▶", "How to play ▶", "Strategy ▶", "Versions ▶", "Train"];
+const buttonText = ["Rules ▶", "Guide ▶", "Strategy ▶", "Versions ▶", "Train"];
 
 let pageNumber = 0;
 let pageNumberLimit = 4;

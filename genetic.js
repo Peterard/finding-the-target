@@ -111,7 +111,6 @@ function Genetic(){
     }
   },
   play: function(){
-    this.iterateGeneration();
 
     this.setInitialPositionValue();
 
@@ -220,6 +219,7 @@ function Genetic(){
     }
   },
   iterateGeneration: function(){
+
     this.neat.generation += 1;
     this.opponentNeat.generation += 1;
 

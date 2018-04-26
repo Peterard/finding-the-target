@@ -18,10 +18,10 @@ var trainComPlayCom = function(){
 
 
 var trainComPlayHuman = function(){
-  genetic.live();
-  genetic.evolve();
 
   if(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 5) < genetic.numberOfEvolutionsEachRound){
+    genetic.live();
+    genetic.evolve();
     genetic.evolutionIteration += 1;
     drawProgressText(Math.round(100*(genetic.evolutionIteration % (genetic.numberOfEvolutionsEachRound + 1)) / (genetic.numberOfEvolutionsEachRound)));
     let thisGenome = genetic;

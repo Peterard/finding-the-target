@@ -40,8 +40,9 @@ body{
 }
 
 #progress-button,
+#progress-button-load,
 #play-again-button{
-  width: 50%;
+  width: 45%;
 }
 
 .canvas-container{
@@ -85,4 +86,20 @@ body{
 #post-game-results-lost-bar{
   margin-left: -10px;
   background-color: #e24848;
+}
+
+li.nav-item{
+  border-radius: 5px;
+  background-color: #e1e6ea;
+  margin: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+li.nav-item.active{
+  background-color: #8899aa;
+}
+
+li.nav-item.active a.nav-link{
+  color: white !important;
 }
